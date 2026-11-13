@@ -1,0 +1,67 @@
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { jwtVerify } from "jose";
+
+const JWT_SECRET = process.env.JWT_SECRET || "alpha-warriors-secure-secret-key-at-least-32-chars";
+const key = new TextEncoder().encode(JWT_SECRET);
+
+const PUBLIC_PATHS = [
+  "/login",
+  "/register",
+  "/api/auth/login",
+  "/api/auth/register",
+];
+
+export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Static assets and internal next paths
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/favicon.ico") ||
+    pathname.startsWith("/portal") ||
+    pathname.startsWith("/i/")
+  ) {
+    return NextResponse.next();
+  }
+
+  const isPublic = PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p));
+  const token = request.cookies.get("auth_session")?.value;
+
+  let isValidSession = false;
+  if (token) {
+    try {
+      await jwtVerify(token, key);
+      isValidSession = true;
+    } catch {
+      isValidSession = false;
+    }
+  }
+
+  // Redirect to login if unauthenticated on protected page
+  if (!isValidSession && !isPublic) {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json(
+        { error: { code: "UNAUTHORIZED", message: "Session required" } },
+        { status: 401 }
+      );
+    }
+    const loginUrl = new URL("/login", request.url);
+    if (pathname !== "/") {
+      loginUrl.searchParams.set("next", pathname);
+    }
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // Redirect to dashboard if logged-in user hits /login or /register
+  if (isValidSession && (pathname === "/login" || pathname === "/register")) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ["/((?!.*\\..*|_next).*)"],
+};
+
