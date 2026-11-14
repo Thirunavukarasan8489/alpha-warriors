@@ -217,10 +217,10 @@ export default function StaffListPage() {
                       <button
                         type="button"
                         onClick={() => setStaffToDelete(u)}
-                        className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition"
+                        className="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition cursor-pointer touch-manipulation relative z-10 flex items-center justify-center"
                         title="Delete Staff Account"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     )}
                   </div>
