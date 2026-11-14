@@ -14,19 +14,6 @@ export function FloatingActionButton({ userRole = "owner", onCollectPaymentClick
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
-  // Trainers are coaching staff, not front desk — they do not enroll members or collect fees
-  if (userRole === "trainer") {
-    return null;
-  }
-
-  // Strip trailing slashes (e.g. "/members/" -> "/members")
-  const normalizedPath = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
-
-  // The floating quick action button is strictly for the 4 core front-desk operation screens:
-  // Home Dashboard, Members List, Attendance, and Payments.
-  // It is NOT rendered on Staff, Settings, Expenses, Reports, Sales, Leads, or any detail/edit pages.
-  const FAB_ALLOWED_ROUTES = ["/", "/members", "/attendance", "/payments"];
-
   // Close FAB when the route changes
   useEffect(() => {
     setIsOpen(false);
@@ -42,6 +29,19 @@ export function FloatingActionButton({ userRole = "owner", onCollectPaymentClick
       return () => window.removeEventListener("keydown", handleKeyDown);
     }
   }, [isOpen]);
+
+  // Trainers are coaching staff, not front desk — they do not enroll members or collect fees
+  if (userRole === "trainer") {
+    return null;
+  }
+
+  // Strip trailing slashes (e.g. "/members/" -> "/members")
+  const normalizedPath = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
+
+  // The floating quick action button is strictly for the 4 core front-desk operation screens:
+  // Home Dashboard, Members List, Attendance, and Payments.
+  // It is NOT rendered on Staff, Settings, Expenses, Reports, Sales, Leads, or any detail/edit pages.
+  const FAB_ALLOWED_ROUTES = ["/", "/members", "/attendance", "/payments"];
 
   if (!FAB_ALLOWED_ROUTES.includes(normalizedPath)) {
     return null;
