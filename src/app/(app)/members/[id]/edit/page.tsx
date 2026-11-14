@@ -26,7 +26,20 @@ export default function EditMemberPage() {
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [gender, setGender] = useState<"male" | "female" | "other" | "prefer_not_to_say">("male");
   const [address, setAddress] = useState("");
+  const [trainerId, setTrainerId] = useState("");
+  const [trainers, setTrainers] = useState<{ id: string; name: string }[]>([]);
   const [notes, setNotes] = useState("");
+
+  useEffect(() => {
+    fetch("/api/staff?role=trainer")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.data) {
+          setTrainers(json.data.map((t: any) => ({ id: t.id, name: t.name })));
+        }
+      })
+      .catch((err) => console.error("Error loading trainers:", err));
+  }, []);
 
   useEffect(() => {
     fetch(`/api/members/${memberId}`)
@@ -42,6 +55,7 @@ export default function EditMemberPage() {
           setGender(m.gender || "male");
           setAddress(m.address || "");
           setPhoto(m.photo || "");
+          setTrainerId(m.trainer?.id || "");
           setNotes(m.notes || "");
         }
       })
@@ -65,6 +79,7 @@ export default function EditMemberPage() {
           gender,
           address: address || undefined,
           photo: photo || undefined,
+          trainerId: trainerId || "",
           notes: notes || undefined,
         }),
       });
@@ -190,16 +205,36 @@ export default function EditMemberPage() {
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-              Address
-            </label>
-            <input
-              type="text"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:bg-white"
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
+                Assigned Trainer
+              </label>
+              <select
+                value={trainerId}
+                onChange={(e) => setTrainerId(e.target.value)}
+                className="w-full px-3.5 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:bg-white"
+              >
+                <option value="">Unassigned (General Floor Member)</option>
+                {trainers.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name} (Trainer)
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
+                Address
+              </label>
+              <input
+                type="text"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                className="w-full px-3.5 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:bg-white"
+              />
+            </div>
           </div>
 
           <div>

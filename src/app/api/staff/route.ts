@@ -16,7 +16,7 @@ function generateOneTimePassword(): string {
 }
 
 export async function GET(req: NextRequest) {
-  const authResult = await requireAuth(["owner", "manager"]);
+  const authResult = await requireAuth(["owner", "manager", "receptionist"]);
   if ("response" in authResult) return authResult.response;
 
   const { auth } = authResult;
@@ -24,11 +24,28 @@ export async function GET(req: NextRequest) {
   try {
     await connectDB();
 
+    const searchParams = req.nextUrl.searchParams;
+    const roleParam = searchParams.get("role");
+
     const query: Record<string, unknown> = { gymId: auth.gymId };
+
+    if (roleParam) {
+      query.role = roleParam;
+    }
 
     // PRIVACY PROTECTION: Never expose Owner's account, phone, email, or credentials to Manager, Trainer, or Staff
     if (auth.role !== "owner") {
-      query.role = { $ne: "owner" };
+      if (roleParam === "owner") {
+        return NextResponse.json({ data: [] });
+      }
+      if (!roleParam) {
+        query.role = { $ne: "owner" };
+      }
+    }
+
+    // Receptionists can only list staff to pick trainers/coaches or view peers
+    if (auth.role === "receptionist" && !roleParam) {
+      query.role = { $in: ["trainer", "receptionist"] };
     }
 
     const users = await User.find(query)

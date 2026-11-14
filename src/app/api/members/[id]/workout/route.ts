@@ -51,9 +51,9 @@ export async function PUT(
     }
 
     // Role check for trainers
-    if (role === "trainer" && member.trainerId?.toString() !== userId) {
+    if (role === "trainer" && member.trainerId && member.trainerId.toString() !== userId) {
       return NextResponse.json(
-        { error: { code: "FORBIDDEN", message: "Trainers can only edit routines for assigned members" } },
+        { error: { code: "FORBIDDEN", message: "Trainers can only edit routines for their own members" } },
         { status: 403 }
       );
     }

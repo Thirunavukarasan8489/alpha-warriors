@@ -277,7 +277,8 @@ Indexes on day one: `members(gymId, phone)` unique, `members(gymId, name)`, `mem
    - **Member Management**:
      - `owner` & `manager`: Full CRUD on gym members. Soft deletion (`isDeleted: true`) via `DELETE /api/members/[id]` logs action to `AuditLog`.
      - `receptionist`: Create, read, and edit members. Cannot delete members.
-     - `trainer`: Read-only access scoped strictly to assigned members.
+     - `trainer`: Scoped access to assigned members and unassigned general floor athletes. Members assigned to other trainers are strictly hidden.
+     - **Trainer Assignment**: Both `/members/new` and `/members/[id]/edit` feature an active Trainer selector. Member profiles display the assigned coach or "Unassigned (General Floor)".
    - **Responsive UI & Safety Confirmation**:
      - Member and Staff lists feature delete buttons on both mobile cards (<900px) and desktop tables (>=900px).
      - Staff detail (`/staff/[id]`) and Member profile (`/members/[id]`) feature Danger Zones / actions with `<ConfirmDialog>` modals and loading spinners before executing deletions.

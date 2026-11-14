@@ -38,12 +38,17 @@ export async function GET(
       );
     }
 
-    // Role check: trainer can only view their own assigned members
-    if (auth.role === "trainer" && member.trainerId?._id?.toString() !== auth.userId) {
-      return NextResponse.json(
-        { error: { code: "FORBIDDEN", message: "You do not have access to this member" } },
-        { status: 403 }
-      );
+    // Role check: trainer can view their own assigned members or unassigned members (never other trainers' members)
+    if (auth.role === "trainer") {
+      const assignedTrainerId =
+        (member.trainerId as unknown as { _id?: { toString(): string } })?._id?.toString() ||
+        member.trainerId?.toString();
+      if (assignedTrainerId && assignedTrainerId !== auth.userId) {
+        return NextResponse.json(
+          { error: { code: "FORBIDDEN", message: "You do not have access to this member" } },
+          { status: 403 }
+        );
+      }
     }
 
     const [gym, latestMembership, invoices, lastAttendance] = await Promise.all([
@@ -152,7 +157,7 @@ export async function PATCH(
           gender: data.gender,
           address: data.address,
           photo: data.photo,
-          trainerId: data.trainerId || undefined,
+          trainerId: data.trainerId ? data.trainerId : null,
           notes: data.notes,
         },
       },

@@ -25,12 +25,12 @@ export async function GET(
       );
     }
 
-    // Security Check: Trainer can ONLY view assigned members!
+    // Security Check: Trainer can view training details for assigned or unassigned members (never other trainers' members)
     if (role === "trainer") {
       const assignedTrainerId = (member as any).trainerId?._id?.toString() || (member as any).trainerId?.toString();
-      if (assignedTrainerId !== userId) {
+      if (assignedTrainerId && assignedTrainerId !== userId) {
         return NextResponse.json(
-          { error: { code: "FORBIDDEN", message: "Trainers can only view training details for members assigned to them" } },
+          { error: { code: "FORBIDDEN", message: "Trainers can only view training details for their own members" } },
           { status: 403 }
         );
       }

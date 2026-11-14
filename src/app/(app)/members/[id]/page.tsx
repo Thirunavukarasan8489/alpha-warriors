@@ -384,23 +384,27 @@ export default function MemberProfilePage() {
 
           {/* Quick Primary Actions: Renew, Collect Payment, More Menu */}
           <div className="flex items-center gap-2.5 pt-3 sm:pt-0 border-t sm:border-0 border-gray-100">
-            <button
-              type="button"
-              onClick={() => setShowRenewModal(true)}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition"
-            >
-              <RefreshCw className="w-4 h-4" />
-              Renew
-            </button>
+            {currentUserRole !== "trainer" && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setShowRenewModal(true)}
+                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  Renew
+                </button>
 
-            <button
-              type="button"
-              onClick={() => setShowCollectPayment(true)}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition"
-            >
-              <CreditCard className="w-4 h-4" />
-              Collect Payment
-            </button>
+                <button
+                  type="button"
+                  onClick={() => setShowCollectPayment(true)}
+                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition"
+                >
+                  <CreditCard className="w-4 h-4" />
+                  Collect Payment
+                </button>
+              </>
+            )}
 
             <Link
               href={`/members/${member.id}/training`}
@@ -550,10 +554,16 @@ export default function MemberProfilePage() {
             </p>
           </div>
           <div>
-            <span className="text-gray-400 font-medium">Pending Dues:</span>
-            <p className={`font-black text-sm mt-0.5 ${member.dues > 0 ? "text-rose-600" : "text-emerald-600"}`}>
-              <MoneyText paise={member.dues} />
-            </p>
+            <span className="text-gray-400 font-medium">
+              {currentUserRole === "trainer" ? "Coach / Trainer:" : "Pending Dues:"}
+            </span>
+            {currentUserRole === "trainer" ? (
+              <p className="font-bold text-gray-900 mt-0.5">{member.trainer?.name || "General Floor"}</p>
+            ) : (
+              <p className={`font-black text-sm mt-0.5 ${member.dues > 0 ? "text-rose-600" : "text-emerald-600"}`}>
+                <MoneyText paise={member.dues} />
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -565,7 +575,7 @@ export default function MemberProfilePage() {
           {[
             { id: "overview", label: "Overview" },
             { id: "memberships", label: "Memberships" },
-            { id: "payments", label: "Payments & Invoices" },
+            ...(currentUserRole !== "trainer" ? [{ id: "payments", label: "Payments & Invoices" }] : []),
             { id: "attendance", label: "Attendance" },
             { id: "notes", label: "Notes" },
           ].map((tab) => (
@@ -645,6 +655,12 @@ export default function MemberProfilePage() {
                 <div className="flex justify-between">
                   <span className="text-gray-500">Address:</span>
                   <span className="font-medium text-gray-800 truncate max-w-[200px]">{member.address || "—"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Assigned Trainer:</span>
+                  <span className="font-semibold text-gray-900">
+                    {member.trainer ? member.trainer.name : "Unassigned (General Floor)"}
+                  </span>
                 </div>
               </div>
             </div>

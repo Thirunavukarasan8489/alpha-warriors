@@ -37,11 +37,17 @@ export async function POST(
       );
     }
 
-    if (role === "trainer" && member.trainerId?.toString() !== userId) {
-      return NextResponse.json(
-        { error: { code: "FORBIDDEN", message: "Trainers can only log sessions for assigned members" } },
-        { status: 403 }
-      );
+    if (role === "trainer") {
+      if (member.trainerId && member.trainerId.toString() !== userId) {
+        return NextResponse.json(
+          { error: { code: "FORBIDDEN", message: "Trainers can only log sessions for their own members" } },
+          { status: 403 }
+        );
+      }
+      // If member was unassigned, assign to this trainer upon logging coaching session
+      if (!member.trainerId) {
+        await Member.findByIdAndUpdate(id, { trainerId: userId });
+      }
     }
 
     const sessionDate = parsed.data.date ? new Date(parsed.data.date) : new Date();

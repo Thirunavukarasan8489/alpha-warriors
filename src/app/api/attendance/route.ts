@@ -29,9 +29,16 @@ export async function GET(req: NextRequest) {
 
     if (branchId) query.branchId = branchId;
 
-    // Trainer sees check-ins for their members
+    // Trainer sees check-ins for their assigned members and unassigned members (never other trainers' members)
     if (auth.role === "trainer") {
-      const myMembers = await Member.find({ gymId: auth.gymId, trainerId: auth.userId }).select("_id");
+      const myMembers = await Member.find({
+        gymId: auth.gymId,
+        $or: [
+          { trainerId: auth.userId },
+          { trainerId: null },
+          { trainerId: { $exists: false } },
+        ],
+      }).select("_id");
       query.memberId = { $in: myMembers.map((m) => m._id) };
     }
 

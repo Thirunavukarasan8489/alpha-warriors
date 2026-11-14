@@ -79,15 +79,24 @@ function MembersListContent() {
     }
   };
 
-  const statusOptions: FilterOption[] = [
-    { id: "all", label: "All Members" },
-    { id: "active", label: "Active" },
-    { id: "expiring", label: "Expiring (7d)" },
-    { id: "expired", label: "Expired" },
-    { id: "dues", label: "Dues Pending" },
-    { id: "frozen", label: "Frozen" },
-    { id: "no_plan", label: "No Plan" },
-  ];
+  const statusOptions: FilterOption[] =
+    currentUserRole === "trainer"
+      ? [
+          { id: "all", label: "All Athletes" },
+          { id: "active", label: "Active" },
+          { id: "expiring", label: "Expiring (7d)" },
+          { id: "expired", label: "Expired" },
+          { id: "frozen", label: "Frozen" },
+        ]
+      : [
+          { id: "all", label: "All Members" },
+          { id: "active", label: "Active" },
+          { id: "expiring", label: "Expiring (7d)" },
+          { id: "expired", label: "Expired" },
+          { id: "dues", label: "Dues Pending" },
+          { id: "frozen", label: "Frozen" },
+          { id: "no_plan", label: "No Plan" },
+        ];
 
   const fetchMembers = async (currentPage = 1, append = false) => {
     setLoading(true);
@@ -167,17 +176,21 @@ function MembersListContent() {
       {/* Header and Add Button */}
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">Members</h1>
+          <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
+            {currentUserRole === "trainer" ? "My Athletes & Members" : "Members"}
+          </h1>
           <p className="text-xs text-gray-500">Directory of registered gym athletes</p>
         </div>
 
-        <Link
-          href="/members/new"
-          className="inline-flex items-center gap-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition"
-        >
-          <UserPlus className="w-4 h-4" />
-          <span>Add Member</span>
-        </Link>
+        {currentUserRole !== "trainer" && (
+          <Link
+            href="/members/new"
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition"
+          >
+            <UserPlus className="w-4 h-4" />
+            <span>Add Member</span>
+          </Link>
+        )}
       </div>
 
       {/* Controls: Search and Sort */}
@@ -248,7 +261,7 @@ function MembersListContent() {
               <MemberCard
                 key={m.id}
                 member={m}
-                onRenew={(mem) => setRenewingMember(mem)}
+                onRenew={currentUserRole !== "trainer" ? (mem) => setRenewingMember(mem) : undefined}
                 onDelete={canDelete ? (mem) => setMemberToDelete(mem) : undefined}
               />
             ))}
@@ -264,13 +277,13 @@ function MembersListContent() {
                   <th className="py-3.5 px-4">Current Plan</th>
                   <th className="py-3.5 px-4">End Date</th>
                   <th className="py-3.5 px-4">Status</th>
-                  <th className="py-3.5 px-4">Pending Dues</th>
+                  <th className="py-3.5 px-4">{currentUserRole === "trainer" ? "Assigned Coach" : "Pending Dues"}</th>
                   <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {members.map((m) => {
-                  const canRenew = m.displayStatus === "expiring" || m.displayStatus === "expired";
+                  const canRenew = currentUserRole !== "trainer" && (m.displayStatus === "expiring" || m.displayStatus === "expired");
                   return (
                     <tr
                       key={m.id}
@@ -325,7 +338,11 @@ function MembersListContent() {
                         <StatusBadge status={m.displayStatus} size="sm" />
                       </td>
                       <td className="py-3.5 px-4">
-                        {m.dues > 0 ? (
+                        {currentUserRole === "trainer" ? (
+                          <span className="font-semibold text-gray-700">
+                            {m.trainerName || "General Floor"}
+                          </span>
+                        ) : m.dues > 0 ? (
                           <span className="text-rose-600 font-extrabold">
                             <MoneyText paise={m.dues} />
                           </span>

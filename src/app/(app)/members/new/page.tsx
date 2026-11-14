@@ -51,8 +51,14 @@ function NewMemberForm() {
   const [trainers, setTrainers] = useState<TrainerOption[]>([]);
 
   useEffect(() => {
-    fetch("/api/auth/me")
-      .catch((err) => console.error("Error loading gym me:", err));
+    fetch("/api/staff?role=trainer")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.data) {
+          setTrainers(json.data.map((t: any) => ({ id: t.id, name: t.name })));
+        }
+      })
+      .catch((err) => console.error("Error loading trainers:", err));
   }, []);
 
   const handlePlanChange = (plan: PlanOption) => {
@@ -305,17 +311,42 @@ function NewMemberForm() {
             </div>
           </div>
 
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
+                Assigned Trainer (Optional)
+              </label>
+              <select
+                value={trainerId}
+                onChange={(e) => setTrainerId(e.target.value)}
+                className="w-full px-3.5 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600 focus:bg-white"
+              >
+                <option value="">Unassigned (General Floor Member)</option>
+                {trainers.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name} (Trainer)
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
+                Address
+              </label>
+              <input
+                type="text"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="Residential address or locality"
+                className="w-full px-3.5 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600 focus:bg-white"
+              />
+            </div>
+          </div>
+
           <div>
             <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-              Address & Notes
+              Notes
             </label>
-            <input
-              type="text"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              placeholder="Residential address or locality"
-              className="w-full px-3.5 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600 focus:bg-white mb-2"
-            />
             <input
               type="text"
               value={notes}

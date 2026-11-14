@@ -138,14 +138,14 @@ function LoginForm() {
           </div>
         </form>
 
-        <div className="mt-6 pt-5 border-t border-gray-100 text-center">
+        {/* <div className="mt-6 pt-5 border-t border-gray-100 text-center">
           <p className="text-xs text-gray-500 font-medium">
             Gym Owner and don&apos;t have an account?{" "}
             <Link href="/register" className="font-extrabold text-red-600 hover:underline">
               Register Gym
             </Link>
           </p>
-        </div>
+        </div> */}
       </div>
     </div>
   );

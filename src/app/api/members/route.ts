@@ -32,28 +32,40 @@ export async function GET(req: NextRequest) {
     const branchId = searchParams.get("branchId") || auth.branchId;
 
     // Gym scoping is strict
-    const query: Record<string, unknown> = {
-      gymId: auth.gymId,
-      isDeleted: false,
-    };
+    const andConditions: Record<string, unknown>[] = [
+      {
+        gymId: auth.gymId,
+        isDeleted: false,
+      },
+    ];
 
     if (branchId) {
-      query.branchId = branchId;
+      andConditions.push({ branchId });
     }
 
-    // Role check: Trainer sees only members assigned to them
+    // Role check: Trainers see their assigned members and unassigned members (never members assigned to other trainers)
     if (auth.role === "trainer") {
-      query.trainerId = auth.userId;
+      andConditions.push({
+        $or: [
+          { trainerId: auth.userId },
+          { trainerId: null },
+          { trainerId: { $exists: false } },
+        ],
+      });
     }
 
     if (search) {
       const cleanPhoneSearch = search.replace(/\D/g, "");
-      query.$or = [
-        { name: { $regex: search, $options: "i" } },
-        { memberCode: { $regex: search, $options: "i" } },
-        ...(cleanPhoneSearch ? [{ phone: { $regex: cleanPhoneSearch } }] : []),
-      ];
+      andConditions.push({
+        $or: [
+          { name: { $regex: search, $options: "i" } },
+          { memberCode: { $regex: search, $options: "i" } },
+          ...(cleanPhoneSearch ? [{ phone: { $regex: cleanPhoneSearch } }] : []),
+        ],
+      });
     }
+
+    const query = andConditions.length > 1 ? { $and: andConditions } : andConditions[0];
 
     const gym = await Gym.findById(auth.gymId);
     const expiringSoonDays = gym?.settings?.expiringSoonDays || 7;
@@ -113,11 +125,12 @@ export async function GET(req: NextRequest) {
         phone: m.phone,
         whatsapp: m.whatsapp,
         photo: m.photo,
+        trainerId: m.trainerId ? ((m.trainerId as any)._id?.toString() || (m.trainerId as any).toString()) : undefined,
         trainerName: m.trainerId ? (m.trainerId as unknown as { name: string }).name : undefined,
         currentPlan: latestMs?.planName || null,
         endDate: latestMs?.endDate || null,
         displayStatus,
-        dues,
+        dues: auth.role === "trainer" ? 0 : dues,
         joinedAt: m.joinedAt,
       };
     });

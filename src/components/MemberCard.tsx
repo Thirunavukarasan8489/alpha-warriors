@@ -85,6 +85,10 @@ export function MemberCard({ member, onRenew, onDelete, className = "" }: Member
               <CreditCard className="w-3.5 h-3.5" />
               Due: <MoneyText paise={member.dues} />
             </span>
+          ) : member.trainerName ? (
+            <span className="text-gray-600 font-medium text-[11px]">
+              Coach: <strong className="text-gray-900">{member.trainerName}</strong>
+            </span>
           ) : (
             <span className="text-gray-400 text-[11px]">No pending dues</span>
           )}
