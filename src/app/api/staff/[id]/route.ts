@@ -27,6 +27,14 @@ export async function GET(
       );
     }
 
+    // PRIVACY PROTECTION: Non-owners cannot access or view Owner account details
+    if (user.role === "owner" && auth.role !== "owner") {
+      return NextResponse.json(
+        { error: { code: "FORBIDDEN", message: "Access restricted." } },
+        { status: 403 }
+      );
+    }
+
     return NextResponse.json({
       data: {
         id: user._id,
@@ -73,10 +81,10 @@ export async function PATCH(
       );
     }
 
-    // Role safety: If user is owner, only the owner can modify them
+    // PRIVACY & SAFETY: Non-owners cannot access, view, or modify Owner account
     if (user.role === "owner" && auth.role !== "owner") {
       return NextResponse.json(
-        { error: { code: "FORBIDDEN", message: "Only the gym owner can modify the owner account." } },
+        { error: { code: "FORBIDDEN", message: "Only the gym owner can access or modify the owner account." } },
         { status: 403 }
       );
     }
@@ -168,6 +176,14 @@ export async function DELETE(
       return NextResponse.json(
         { error: { code: "NOT_FOUND", message: "Staff member not found" } },
         { status: 404 }
+      );
+    }
+
+    // PRIVACY PROTECTION: Non-owners cannot access or view Owner account details
+    if (user.role === "owner" && auth.role !== "owner") {
+      return NextResponse.json(
+        { error: { code: "FORBIDDEN", message: "Access restricted." } },
+        { status: 403 }
       );
     }
 

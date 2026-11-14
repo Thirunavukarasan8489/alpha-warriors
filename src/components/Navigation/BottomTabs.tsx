@@ -24,7 +24,11 @@ import {
   Building2,
 } from "lucide-react";
 
-export function BottomTabs() {
+interface BottomTabsProps {
+  userRole?: string;
+}
+
+export function BottomTabs({ userRole = "owner" }: BottomTabsProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [showMore, setShowMore] = useState(false);
@@ -39,27 +43,82 @@ export function BottomTabs() {
     }
   };
 
-  const primaryTabs = [
-    { href: "/", label: "Home", icon: LayoutDashboard },
-    { href: "/members", label: "Members", icon: Users },
-    { href: "/attendance", label: "Attendance", icon: CalendarCheck },
-    { href: "/payments", label: "Payments", icon: CreditCard },
-  ];
+  // Build role-scoped primary tabs and more items
+  const getTabsConfig = () => {
+    if (userRole === "trainer") {
+      return {
+        primaryTabs: [
+          { href: "/", label: "Home", icon: LayoutDashboard },
+          { href: "/members", label: "My Athletes", icon: Users },
+          { href: "/attendance", label: "Attendance", icon: CalendarCheck },
+        ],
+        moreItems: [],
+      };
+    }
 
-  const moreItems = [
-    { href: "/leads", label: "Leads CRM", icon: Flame },
-    { href: "/sales", label: "POS Sales", icon: ShoppingBag },
-    { href: "/plans", label: "Plans", icon: Layers },
-    { href: "/reports", label: "Reports", icon: BarChart3 },
-    { href: "/invoices", label: "Invoices", icon: Receipt },
-    { href: "/reminders", label: "Reminders", icon: Bell },
-    { href: "/expenses", label: "Expenses", icon: Wallet },
-    { href: "/staff", label: "Staff", icon: UserCheck },
-    { href: "/staff/payroll", label: "Payroll", icon: Banknote },
-    { href: "/settings/branches", label: "Branches", icon: Building2 },
-    { href: "/settings", label: "Settings", icon: Settings },
-  ];
+    if (userRole === "receptionist") {
+      return {
+        primaryTabs: [
+          { href: "/", label: "Home", icon: LayoutDashboard },
+          { href: "/members", label: "Members", icon: Users },
+          { href: "/attendance", label: "Attendance", icon: CalendarCheck },
+          { href: "/payments", label: "Payments", icon: CreditCard },
+        ],
+        moreItems: [
+          { href: "/invoices", label: "Invoices", icon: Receipt },
+          { href: "/reminders", label: "Reminders", icon: Bell },
+          { href: "/sales", label: "POS Sales", icon: ShoppingBag },
+          { href: "/leads", label: "Leads CRM", icon: Flame },
+        ],
+      };
+    }
 
+    if (userRole === "manager") {
+      return {
+        primaryTabs: [
+          { href: "/", label: "Home", icon: LayoutDashboard },
+          { href: "/members", label: "Members", icon: Users },
+          { href: "/attendance", label: "Attendance", icon: CalendarCheck },
+          { href: "/payments", label: "Payments", icon: CreditCard },
+        ],
+        moreItems: [
+          { href: "/leads", label: "Leads CRM", icon: Flame },
+          { href: "/sales", label: "POS Sales", icon: ShoppingBag },
+          { href: "/plans", label: "Plans", icon: Layers },
+          { href: "/reports", label: "Reports", icon: BarChart3 },
+          { href: "/invoices", label: "Invoices", icon: Receipt },
+          { href: "/reminders", label: "Reminders", icon: Bell },
+          { href: "/expenses", label: "Expenses", icon: Wallet },
+          { href: "/staff", label: "Staff", icon: UserCheck },
+        ],
+      };
+    }
+
+    // Owner role (default)
+    return {
+      primaryTabs: [
+        { href: "/", label: "Home", icon: LayoutDashboard },
+        { href: "/members", label: "Members", icon: Users },
+        { href: "/attendance", label: "Attendance", icon: CalendarCheck },
+        { href: "/payments", label: "Payments", icon: CreditCard },
+      ],
+      moreItems: [
+        { href: "/leads", label: "Leads CRM", icon: Flame },
+        { href: "/sales", label: "POS Sales", icon: ShoppingBag },
+        { href: "/plans", label: "Plans", icon: Layers },
+        { href: "/reports", label: "Reports", icon: BarChart3 },
+        { href: "/invoices", label: "Invoices", icon: Receipt },
+        { href: "/reminders", label: "Reminders", icon: Bell },
+        { href: "/expenses", label: "Expenses", icon: Wallet },
+        { href: "/staff", label: "Staff", icon: UserCheck },
+        { href: "/staff/payroll", label: "Payroll", icon: Banknote },
+        { href: "/settings/branches", label: "Branches", icon: Building2 },
+        { href: "/settings", label: "Settings", icon: Settings },
+      ],
+    };
+  };
+
+  const { primaryTabs, moreItems } = getTabsConfig();
   const isMoreActive = moreItems.some((item) => pathname.startsWith(item.href));
 
   return (
@@ -89,23 +148,34 @@ export function BottomTabs() {
           );
         })}
 
-        {/* More Tab */}
-        <button
-          type="button"
-          onClick={() => setShowMore(true)}
-          className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition ${
-            isMoreActive
-              ? "text-red-600 font-bold"
-              : "text-gray-500 hover:text-gray-900 font-medium"
-          }`}
-        >
-          <MoreHorizontal className="w-5 h-5" />
-          <span className="text-[10px] mt-0.5">More</span>
-        </button>
+        {/* More Tab - only if more items exist */}
+        {moreItems.length > 0 ? (
+          <button
+            type="button"
+            onClick={() => setShowMore(true)}
+            className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition ${
+              isMoreActive
+                ? "text-red-600 font-bold"
+                : "text-gray-500 hover:text-gray-900 font-medium"
+            }`}
+          >
+            <MoreHorizontal className="w-5 h-5" />
+            <span className="text-[10px] mt-0.5">More</span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex flex-col items-center justify-center py-1 px-3 rounded-xl text-gray-500 hover:text-rose-600 font-medium transition cursor-pointer"
+          >
+            <LogOut className="w-5 h-5" />
+            <span className="text-[10px] mt-0.5">Sign Out</span>
+          </button>
+        )}
       </div>
 
       {/* More Bottom Sheet Drawer */}
-      {showMore && (
+      {showMore && moreItems.length > 0 && (
         <div className="md:hidden fixed inset-0 z-50 flex flex-col justify-end bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
           <div className="absolute inset-0" onClick={() => setShowMore(false)} />
 
@@ -117,7 +187,7 @@ export function BottomTabs() {
               <button
                 type="button"
                 onClick={() => setShowMore(false)}
-                className="p-1 rounded-full text-gray-400 hover:text-gray-700"
+                className="p-1 rounded-full text-gray-400 hover:text-gray-700 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -150,7 +220,7 @@ export function BottomTabs() {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="w-full flex items-center justify-center gap-2 py-2.5 text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-xl text-sm font-semibold transition"
+                className="w-full flex items-center justify-center gap-2 py-2.5 text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-xl text-sm font-semibold transition cursor-pointer"
               >
                 <LogOut className="w-4 h-4" />
                 Sign Out

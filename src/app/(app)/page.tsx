@@ -23,6 +23,7 @@ import { SkeletonStats, SkeletonList } from "@/components/Skeleton";
 
 interface DashboardData {
   gymName: string;
+  userRole?: string;
   stats: {
     todayCollection: number;
     newMembersWeek: number;
@@ -243,100 +244,200 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <Link
-          href="/members/new"
-          className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-red-600/20 transition"
-        >
-          <PlusCircle className="w-4 h-4" />
-          <span>Add Member</span>
-        </Link>
+        {data.userRole === "trainer" ? (
+          <Link
+            href="/members"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-red-600/20 transition"
+          >
+            <Users className="w-4 h-4" />
+            <span>My Athletes</span>
+          </Link>
+        ) : (
+          <Link
+            href="/members/new"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-red-600/20 transition"
+          >
+            <PlusCircle className="w-4 h-4" />
+            <span>Add Member</span>
+          </Link>
+        )}
       </div>
 
       {/* 4 Primary Number Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-        {/* Today's Collection */}
-        <Link
-          href="/payments"
-          className="p-4 bg-white rounded-2xl border border-gray-200/80 shadow-xs hover:shadow-md hover:border-red-200 transition group"
-        >
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-              Today&apos;s Collection
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-              <Wallet className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-lg sm:text-2xl font-black text-gray-900 group-hover:text-red-600 transition">
-            <MoneyText paise={data.stats.todayCollection} />
-          </div>
-          <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
-            Tap for transactions <ArrowRight className="w-2.5 h-2.5" />
-          </p>
-        </Link>
+        {data.userRole === "trainer" ? (
+          <>
+            {/* Trainee Athletes */}
+            <Link
+              href="/members"
+              className="p-4 bg-white rounded-2xl border border-gray-200/80 shadow-xs hover:shadow-md hover:border-red-200 transition group"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                  Assigned Athletes
+                </span>
+                <div className="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold">
+                  <Users className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="text-lg sm:text-2xl font-black text-gray-900 group-hover:text-red-600 transition">
+                {data.stats.newMembersMonth || 0}
+              </div>
+              <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
+                View trainee list <ArrowRight className="w-2.5 h-2.5" />
+              </p>
+            </Link>
 
-        {/* Check-ins Today */}
-        <Link
-          href="/attendance"
-          className="p-4 bg-white rounded-2xl border border-gray-200/80 shadow-xs hover:shadow-md hover:border-red-200 transition group"
-        >
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-              Check-ins Today
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-              <CalendarCheck className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-lg sm:text-2xl font-black text-gray-900 group-hover:text-red-600 transition">
-            {data.stats.checkInsToday}
-          </div>
-          <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
-            Attendance log <ArrowRight className="w-2.5 h-2.5" />
-          </p>
-        </Link>
+            {/* Check-ins Today */}
+            <Link
+              href="/attendance"
+              className="p-4 bg-white rounded-2xl border border-gray-200/80 shadow-xs hover:shadow-md hover:border-red-200 transition group"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                  Check-ins Today
+                </span>
+                <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                  <CalendarCheck className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="text-lg sm:text-2xl font-black text-gray-900 group-hover:text-red-600 transition">
+                {data.stats.checkInsToday}
+              </div>
+              <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
+                Attendance log <ArrowRight className="w-2.5 h-2.5" />
+              </p>
+            </Link>
 
-        {/* Expiring Soon */}
-        <Link
-          href="/members?status=expiring"
-          className="p-4 bg-white rounded-2xl border border-gray-200/80 shadow-xs hover:shadow-md hover:border-red-200 transition group"
-        >
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-              Expiring in 7 Days
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-              <AlertTriangle className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-lg sm:text-2xl font-black text-amber-600">
-            {data.stats.expiringIn7Days}
-          </div>
-          <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
-            View expiring list <ArrowRight className="w-2.5 h-2.5" />
-          </p>
-        </Link>
+            {/* Expiring Soon */}
+            <Link
+              href="/members?status=expiring"
+              className="p-4 bg-white rounded-2xl border border-gray-200/80 shadow-xs hover:shadow-md hover:border-red-200 transition group"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                  Expiring in 7 Days
+                </span>
+                <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                  <AlertTriangle className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="text-lg sm:text-2xl font-black text-amber-600">
+                {data.stats.expiringIn7Days}
+              </div>
+              <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
+                View expiring <ArrowRight className="w-2.5 h-2.5" />
+              </p>
+            </Link>
 
-        {/* Total Dues */}
-        <Link
-          href="/payments?tab=dues"
-          className="p-4 bg-white rounded-2xl border border-gray-200/80 shadow-xs hover:shadow-md hover:border-red-200 transition group"
-        >
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-              Total Dues
-            </span>
-            <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
-              <CreditCard className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-lg sm:text-2xl font-black text-rose-600">
-            <MoneyText paise={data.stats.duesTotal} />
-          </div>
-          <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
-            View unpaid dues <ArrowRight className="w-2.5 h-2.5" />
-          </p>
-        </Link>
+            {/* New Athletes This Week */}
+            <Link
+              href="/members"
+              className="p-4 bg-white rounded-2xl border border-gray-200/80 shadow-xs hover:shadow-md hover:border-red-200 transition group"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                  New This Week
+                </span>
+                <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="text-lg sm:text-2xl font-black text-emerald-700">
+                {data.stats.newMembersWeek}
+              </div>
+              <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
+                Recent trainees <ArrowRight className="w-2.5 h-2.5" />
+              </p>
+            </Link>
+          </>
+        ) : (
+          <>
+            {/* Today's Collection */}
+            <Link
+              href="/payments"
+              className="p-4 bg-white rounded-2xl border border-gray-200/80 shadow-xs hover:shadow-md hover:border-red-200 transition group"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                  Today&apos;s Collection
+                </span>
+                <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                  <Wallet className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="text-lg sm:text-2xl font-black text-gray-900 group-hover:text-red-600 transition">
+                <MoneyText paise={data.stats.todayCollection} />
+              </div>
+              <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
+                Tap for transactions <ArrowRight className="w-2.5 h-2.5" />
+              </p>
+            </Link>
+
+            {/* Check-ins Today */}
+            <Link
+              href="/attendance"
+              className="p-4 bg-white rounded-2xl border border-gray-200/80 shadow-xs hover:shadow-md hover:border-red-200 transition group"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                  Check-ins Today
+                </span>
+                <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                  <CalendarCheck className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="text-lg sm:text-2xl font-black text-gray-900 group-hover:text-red-600 transition">
+                {data.stats.checkInsToday}
+              </div>
+              <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
+                Attendance log <ArrowRight className="w-2.5 h-2.5" />
+              </p>
+            </Link>
+
+            {/* Expiring Soon */}
+            <Link
+              href="/members?status=expiring"
+              className="p-4 bg-white rounded-2xl border border-gray-200/80 shadow-xs hover:shadow-md hover:border-red-200 transition group"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                  Expiring in 7 Days
+                </span>
+                <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                  <AlertTriangle className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="text-lg sm:text-2xl font-black text-amber-600">
+                {data.stats.expiringIn7Days}
+              </div>
+              <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
+                View expiring list <ArrowRight className="w-2.5 h-2.5" />
+              </p>
+            </Link>
+
+            {/* Total Dues */}
+            <Link
+              href="/payments?tab=dues"
+              className="p-4 bg-white rounded-2xl border border-gray-200/80 shadow-xs hover:shadow-md hover:border-red-200 transition group"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                  Total Dues
+                </span>
+                <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+                  <CreditCard className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="text-lg sm:text-2xl font-black text-rose-600">
+                <MoneyText paise={data.stats.duesTotal} />
+              </div>
+              <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
+                View unpaid dues <ArrowRight className="w-2.5 h-2.5" />
+              </p>
+            </Link>
+          </>
+        )}
       </div>
 
       {/* Middle Section: Revenue Chart (if permitted) & Growth */}
@@ -471,16 +572,17 @@ export default function DashboardPage() {
         </div>
 
         {/* Recent Collections */}
-        <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-extrabold text-sm text-gray-900">Recent Collections</h3>
-              <p className="text-[11px] text-gray-400">Last 5 payments recorded</p>
+        {data.userRole !== "trainer" && (
+          <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="font-extrabold text-sm text-gray-900">Recent Collections</h3>
+                <p className="text-[11px] text-gray-400">Last 5 payments recorded</p>
+              </div>
+              <Link href="/payments" className="text-xs font-bold text-red-600 hover:underline">
+                View All
+              </Link>
             </div>
-            <Link href="/payments" className="text-xs font-bold text-red-600 hover:underline">
-              View All
-            </Link>
-          </div>
 
           {data.recentPayments.length === 0 ? (
             <div className="py-8 text-center text-xs text-gray-400">
@@ -518,6 +620,66 @@ export default function DashboardPage() {
             </div>
           )}
         </div>
+      )}
+
+        {/* Training Desk Quick Shortcuts for Trainer */}
+        {data.userRole === "trainer" && (
+          <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h3 className="font-extrabold text-sm text-gray-900">Training Floor Desk</h3>
+                  <p className="text-[11px] text-gray-400">Coaching tools & athlete routines</p>
+                </div>
+                <div className="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold">
+                  <Dumbbell className="w-4 h-4" />
+                </div>
+              </div>
+
+              <div className="space-y-2.5 mt-3">
+                <Link
+                  href="/members"
+                  className="p-3 bg-gray-50 hover:bg-red-50/50 rounded-xl border border-gray-100 flex items-center justify-between transition group"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Dumbbell className="w-4 h-4 text-red-600" />
+                    <div>
+                      <p className="text-xs font-bold text-gray-900 group-hover:text-red-600 transition">
+                        Update Weekly Workouts
+                      </p>
+                      <p className="text-[10px] text-gray-400">Configure exercises, sets, and reps</p>
+                    </div>
+                  </div>
+                  <ArrowRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-red-600 transition" />
+                </Link>
+
+                <Link
+                  href="/members"
+                  className="p-3 bg-gray-50 hover:bg-emerald-50/50 rounded-xl border border-gray-100 flex items-center justify-between transition group"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Sparkles className="w-4 h-4 text-emerald-600" />
+                    <div>
+                      <p className="text-xs font-bold text-gray-900 group-hover:text-emerald-700 transition">
+                        Manage Nutrition Charts
+                      </p>
+                      <p className="text-[10px] text-gray-400">Assign meal plans & target calories</p>
+                    </div>
+                  </div>
+                  <ArrowRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-emerald-600 transition" />
+                </Link>
+              </div>
+            </div>
+
+            <Link
+              href="/attendance"
+              className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-red-600 hover:text-red-700"
+            >
+              <span>View Today&apos;s Check-ins</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

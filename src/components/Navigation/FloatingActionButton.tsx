@@ -6,12 +6,18 @@ import { usePathname } from "next/navigation";
 import { Plus, UserPlus, CreditCard, CalendarCheck } from "lucide-react";
 
 interface FloatingActionButtonProps {
+  userRole?: string;
   onCollectPaymentClick: () => void;
 }
 
-export function FloatingActionButton({ onCollectPaymentClick }: FloatingActionButtonProps) {
+export function FloatingActionButton({ userRole = "owner", onCollectPaymentClick }: FloatingActionButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+
+  // Trainers are coaching staff, not front desk — they do not enroll members or collect fees
+  if (userRole === "trainer") {
+    return null;
+  }
 
   // Strip trailing slashes (e.g. "/members/" -> "/members")
   const normalizedPath = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;

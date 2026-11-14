@@ -180,6 +180,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       data: {
         gymName: gym?.name || "Alpha Warriors",
+        userRole: auth.role,
         stats: {
           todayCollection: auth.role === "trainer" ? 0 : todayCollection,
           newMembersWeek: newMembersThisWeek,

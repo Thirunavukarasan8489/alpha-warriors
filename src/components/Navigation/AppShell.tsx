@@ -113,11 +113,12 @@ export function AppShell({ children }: AppShellProps) {
 
           {/* Floating Action Button for Quick Actions */}
           <FloatingActionButton
+            userRole={gymInfo.userRole}
             onCollectPaymentClick={() => setIsCollectPaymentOpen(true)}
           />
 
           {/* Mobile Bottom Tabs */}
-          <BottomTabs />
+          <BottomTabs userRole={gymInfo.userRole} />
 
           {/* Global Collect Payment Modal */}
           <CollectPaymentModal

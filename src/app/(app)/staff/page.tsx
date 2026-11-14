@@ -75,6 +75,11 @@ export default function StaffListPage() {
     return true;
   };
 
+  // PRIVACY PROTECTION: Owner's row and account details are strictly hidden from non-owners
+  const visibleStaff = staff.filter(
+    (u) => currentUser?.role === "owner" || u.role !== "owner"
+  );
+
   const handleDeleteStaff = async () => {
     if (!staffToDelete) return;
     setIsDeleting(true);
@@ -155,7 +160,7 @@ export default function StaffListPage() {
       {/* Staff List */}
       {loading ? (
         <SkeletonList count={3} />
-      ) : staff.length === 0 ? (
+      ) : visibleStaff.length === 0 ? (
         <EmptyState
           icon={<Users className="w-6 h-6 text-red-600" />}
           title="No staff members registered"
@@ -169,7 +174,7 @@ export default function StaffListPage() {
         <div className="bg-white rounded-2xl border border-gray-200/80 overflow-hidden shadow-xs">
           {/* Mobile Cards */}
           <div className="divide-y divide-gray-100 md:hidden">
-            {staff.map((u) => (
+            {visibleStaff.map((u) => (
               <div key={u.id} className="p-4 space-y-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-3">
@@ -242,7 +247,7 @@ export default function StaffListPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 font-medium text-gray-700">
-                {staff.map((u) => (
+                {visibleStaff.map((u) => (
                   <tr key={u.id} className="hover:bg-gray-50/60 transition">
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-3">

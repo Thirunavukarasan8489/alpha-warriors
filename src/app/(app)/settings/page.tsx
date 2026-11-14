@@ -47,6 +47,7 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<
     "gym" | "billing" | "templates" | "import" | "account"
   >("gym");
+  const [currentUserRole, setCurrentUserRole] = useState<string>("owner");
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -84,6 +85,17 @@ export default function SettingsPage() {
   const loadAllSettings = async () => {
     setLoading(true);
     try {
+      const meRes = await fetch("/api/auth/me");
+      const meJson = await meRes.json();
+      const role = meJson.data?.user?.role || "owner";
+      setCurrentUserRole(role);
+
+      if (role !== "owner") {
+        setActiveTab("account");
+        setLoading(false);
+        return;
+      }
+
       const [settingsRes, templatesRes] = await Promise.all([
         fetch("/api/settings"),
         fetch("/api/settings/templates"),
@@ -322,13 +334,16 @@ export default function SettingsPage() {
 
       {/* Tabs */}
       <div className="flex items-center gap-2 border-b border-gray-200 pb-1 overflow-x-auto">
-        {[
-          { id: "gym", label: "Gym Profile", icon: Building2 },
-          { id: "billing", label: "Billing Defaults", icon: Receipt },
-          { id: "templates", label: "WhatsApp Templates", icon: MessageSquare },
-          { id: "import", label: "Import Members", icon: UploadCloud },
-          { id: "account", label: "Account", icon: User },
-        ].map((tab) => {
+        {(currentUserRole === "owner"
+          ? [
+              { id: "gym", label: "Gym Profile", icon: Building2 },
+              { id: "billing", label: "Billing Defaults", icon: Receipt },
+              { id: "templates", label: "WhatsApp Templates", icon: MessageSquare },
+              { id: "import", label: "Import Members", icon: UploadCloud },
+              { id: "account", label: "My Account", icon: User },
+            ]
+          : [{ id: "account", label: "My Account & Password", icon: User }]
+        ).map((tab) => {
           const Icon = tab.icon;
           return (
             <button

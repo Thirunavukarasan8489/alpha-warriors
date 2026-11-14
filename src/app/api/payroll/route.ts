@@ -24,10 +24,10 @@ export async function GET(req: NextRequest) {
     const startOfMonth = new Date(Date.UTC(year, monthNum - 1, 1, 0, 0, 0));
     const endOfMonth = new Date(Date.UTC(year, monthNum, 0, 23, 59, 59, 999));
 
-    // Get all active non-member staff
+    // Get all active staff (excluding owner)
     const staffMembers = await User.find({
       gymId,
-      role: { $in: ["manager", "receptionist", "trainer", "owner"] },
+      role: { $in: ["manager", "receptionist", "trainer"] },
       isActive: true,
     }).lean();
 

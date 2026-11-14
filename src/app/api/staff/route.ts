@@ -24,7 +24,14 @@ export async function GET(req: NextRequest) {
   try {
     await connectDB();
 
-    const users = await User.find({ gymId: auth.gymId })
+    const query: Record<string, unknown> = { gymId: auth.gymId };
+
+    // PRIVACY PROTECTION: Never expose Owner's account, phone, email, or credentials to Manager, Trainer, or Staff
+    if (auth.role !== "owner") {
+      query.role = { $ne: "owner" };
+    }
+
+    const users = await User.find(query)
       .select("-passwordHash")
       .populate("branchIds", "name")
       .sort({ createdAt: 1 });

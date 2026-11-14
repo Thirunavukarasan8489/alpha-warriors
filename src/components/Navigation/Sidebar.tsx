@@ -2,7 +2,6 @@
 
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
@@ -47,27 +46,67 @@ export function Sidebar({
     }
   };
 
-  const navItems = [
-    { href: "/", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/members", label: "Members", icon: Users },
-    { href: "/attendance", label: "Attendance", icon: CalendarCheck },
-    { href: "/payments", label: "Payments & Dues", icon: CreditCard },
-    { href: "/leads", label: "Leads CRM", icon: Flame },
-    { href: "/sales", label: "POS Sales", icon: ShoppingBag },
-    { href: "/plans", label: "Plans", icon: Layers },
-    { href: "/reports", label: "Reports", icon: BarChart3 },
-    { href: "/invoices", label: "Invoices", icon: Receipt },
-    { href: "/reminders", label: "Reminders", icon: Bell },
-    { href: "/expenses", label: "Expenses", icon: Wallet },
-    { href: "/staff", label: "Staff", icon: UserCheck },
-    ...(userRole === "owner"
-      ? [
+  // Build role-scoped navigation items
+  const getNavItems = () => {
+    switch (userRole) {
+      case "trainer":
+        return [
+          { href: "/", label: "Dashboard", icon: LayoutDashboard },
+          { href: "/members", label: "My Athletes", icon: Users },
+          { href: "/attendance", label: "Attendance", icon: CalendarCheck },
+        ];
+
+      case "receptionist":
+        return [
+          { href: "/", label: "Dashboard", icon: LayoutDashboard },
+          { href: "/members", label: "Members", icon: Users },
+          { href: "/attendance", label: "Attendance", icon: CalendarCheck },
+          { href: "/payments", label: "Payments & Dues", icon: CreditCard },
+          { href: "/invoices", label: "Invoices", icon: Receipt },
+          { href: "/reminders", label: "Reminders", icon: Bell },
+          { href: "/sales", label: "POS Sales", icon: ShoppingBag },
+          { href: "/leads", label: "Leads CRM", icon: Flame },
+        ];
+
+      case "manager":
+        return [
+          { href: "/", label: "Dashboard", icon: LayoutDashboard },
+          { href: "/members", label: "Members", icon: Users },
+          { href: "/attendance", label: "Attendance", icon: CalendarCheck },
+          { href: "/payments", label: "Payments & Dues", icon: CreditCard },
+          { href: "/leads", label: "Leads CRM", icon: Flame },
+          { href: "/sales", label: "POS Sales", icon: ShoppingBag },
+          { href: "/plans", label: "Plans", icon: Layers },
+          { href: "/reports", label: "Reports", icon: BarChart3 },
+          { href: "/invoices", label: "Invoices", icon: Receipt },
+          { href: "/reminders", label: "Reminders", icon: Bell },
+          { href: "/expenses", label: "Expenses", icon: Wallet },
+          { href: "/staff", label: "Staff", icon: UserCheck },
+        ];
+
+      case "owner":
+      default:
+        return [
+          { href: "/", label: "Dashboard", icon: LayoutDashboard },
+          { href: "/members", label: "Members", icon: Users },
+          { href: "/attendance", label: "Attendance", icon: CalendarCheck },
+          { href: "/payments", label: "Payments & Dues", icon: CreditCard },
+          { href: "/leads", label: "Leads CRM", icon: Flame },
+          { href: "/sales", label: "POS Sales", icon: ShoppingBag },
+          { href: "/plans", label: "Plans", icon: Layers },
+          { href: "/reports", label: "Reports", icon: BarChart3 },
+          { href: "/invoices", label: "Invoices", icon: Receipt },
+          { href: "/reminders", label: "Reminders", icon: Bell },
+          { href: "/expenses", label: "Expenses", icon: Wallet },
+          { href: "/staff", label: "Staff", icon: UserCheck },
           { href: "/staff/payroll", label: "Payroll", icon: Banknote },
           { href: "/settings/branches", label: "Branches", icon: Building2 },
-        ]
-      : []),
-    { href: "/settings", label: "Settings", icon: Settings },
-  ];
+          { href: "/settings", label: "Settings", icon: Settings },
+        ];
+    }
+  };
+
+  const navItems = getNavItems();
 
   return (
     <aside className="hidden md:flex flex-col w-64 bg-slate-950 text-slate-300 border-r border-slate-900 shrink-0 select-none shadow-xl">
@@ -130,7 +169,7 @@ export function Sidebar({
             type="button"
             onClick={handleLogout}
             title="Sign out"
-            className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-slate-800 rounded-lg transition"
+            className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-slate-800 rounded-lg transition cursor-pointer"
           >
             <LogOut className="w-4 h-4" />
           </button>
