@@ -20,6 +20,7 @@ export function AppShell({ children }: AppShellProps) {
     userName: string;
     userRole: string;
     branchName?: string;
+    gymLogo?: string;
   }>({
     gymName: "Alpha Warriors",
     userName: "Gym Staff",
@@ -39,6 +40,7 @@ export function AppShell({ children }: AppShellProps) {
             userName: data.data.user.name,
             userRole: data.data.user.role,
             branchName: data.data.branches?.[0]?.name || "Main Branch",
+            gymLogo: data.data.gym.logo,
           });
         }
       })
@@ -53,6 +55,7 @@ export function AppShell({ children }: AppShellProps) {
           gymName={gymInfo.gymName}
           userName={gymInfo.userName}
           userRole={gymInfo.userRole}
+          gymLogo={gymInfo.gymLogo}
         />
 
         {/* Main Content Area */}
@@ -64,8 +67,8 @@ export function AppShell({ children }: AppShellProps) {
               <div className="md:hidden w-10 h-10 rounded-xl overflow-hidden ring-2 ring-red-600/40 shadow-xs shrink-0 bg-black">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/logo.jpg"
-                  alt="Alpha Warriors"
+                  src={gymInfo.gymLogo || "/logo.jpg"}
+                  alt={gymInfo.gymName}
                   className="w-full h-full object-cover"
                 />
               </div>

@@ -282,3 +282,13 @@ Indexes on day one: `members(gymId, phone)` unique, `members(gymId, name)`, `mem
    - **Responsive UI & Safety Confirmation**:
      - Member and Staff lists feature delete buttons on both mobile cards (<900px) and desktop tables (>=900px).
      - Staff detail (`/staff/[id]`) and Member profile (`/members/[id]`) feature Danger Zones / actions with `<ConfirmDialog>` modals and loading spinners before executing deletions.
+
+6. **Cloudinary Media Storage & Multi-Tenant Folder Structure**:
+   - **Environment Credentials**: `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`.
+   - **Multi-Tenant Folder Hierarchy**:
+     - `alpha-warriors/{gymId}/members`: Athlete profile pictures captured via mobile camera or uploaded from device.
+     - `alpha-warriors/{gymId}/branding`: Gym facility logos used on tax invoices, verified receipts, and member passes.
+     - `alpha-warriors/{gymId}/staff`: Staff / coach profile images.
+     - `alpha-warriors/{gymId}/products`: POS merchandise and supplement product images.
+   - **Upload Endpoint**: `POST /api/upload` accepts `multipart/form-data` and JSON base64 data URIs, applies dimension constraints (800px–1200px) and auto-format/auto-quality transformations (`f_auto, q_auto:good`), and returns CDN secure URLs.
+   - **Frontend Uploader**: `PhotoUploader.tsx` provides zero-latency client previews, animated loading states with spinner overlays, mobile camera support (`capture="user"`), error toast handling, and removal triggers.

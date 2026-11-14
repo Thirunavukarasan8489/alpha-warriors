@@ -18,10 +18,19 @@ const PUBLIC_PATHS = [
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Static assets, public customer self-service pages, and token-based public APIs
+  // Static assets, public customer self-service pages, PWA icons, manifests, and token-based public APIs
   if (
     pathname.startsWith("/_next") ||
-    pathname.startsWith("/favicon.ico") ||
+    pathname.startsWith("/favicon") ||
+    pathname.startsWith("/icon") ||
+    pathname.startsWith("/apple-") ||
+    pathname.startsWith("/manifest") ||
+    pathname.endsWith(".png") ||
+    pathname.endsWith(".jpg") ||
+    pathname.endsWith(".jpeg") ||
+    pathname.endsWith(".svg") ||
+    pathname.endsWith(".ico") ||
+    pathname.endsWith(".json") ||
     pathname.startsWith("/portal") ||
     pathname.startsWith("/i/") ||
     pathname.startsWith("/parq") ||

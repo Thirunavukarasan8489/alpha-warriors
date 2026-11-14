@@ -208,7 +208,12 @@ function NewMemberForm() {
             1. Member Details
           </h2>
 
-          <PhotoUploader value={photo} onChange={setPhoto} />
+          <PhotoUploader
+            value={photo}
+            onChange={setPhoto}
+            folder="members"
+            label="Athlete Profile Photo"
+          />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>

@@ -20,6 +20,7 @@ import {
 import { Modal } from "@/components/Modal";
 import { useToast } from "@/components/Toast";
 import { SkeletonList, SkeletonStats } from "@/components/Skeleton";
+import { PhotoUploader } from "@/components/PhotoUploader";
 
 interface GymSettingsData {
   id: string;
@@ -370,6 +371,16 @@ export default function SettingsPage() {
             <h2 className="font-bold text-sm text-gray-900 pb-2 border-b border-gray-100">
               Facility Information (Printed on Tax Invoices)
             </h2>
+
+            {/* Gym Logo Upload */}
+            <div className="pb-3 border-b border-gray-100">
+              <PhotoUploader
+                value={gymData.logo}
+                onChange={(url) => setGymData({ ...gymData, logo: url })}
+                folder="branding"
+                label="Gym Logo (Shown on tax receipts, invoice printouts & member pass)"
+              />
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>

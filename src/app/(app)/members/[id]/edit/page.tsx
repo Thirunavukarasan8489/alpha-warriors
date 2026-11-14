@@ -119,7 +119,12 @@ export default function EditMemberPage() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200/80 shadow-xs space-y-4">
-          <PhotoUploader value={photo} onChange={setPhoto} />
+          <PhotoUploader
+            value={photo}
+            onChange={setPhoto}
+            folder="members"
+            label="Athlete Profile Photo"
+          />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>

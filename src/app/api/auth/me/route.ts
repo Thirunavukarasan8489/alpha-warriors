@@ -37,6 +37,7 @@ export async function GET() {
         gym: {
           id: gym._id,
           name: gym.name,
+          logo: gym.logo,
           settings: gym.settings,
         },
         branches: branches.map((b) => ({

@@ -26,12 +26,14 @@ interface SidebarProps {
   gymName?: string;
   userName?: string;
   userRole?: string;
+  gymLogo?: string;
 }
 
 export function Sidebar({
   gymName = "Alpha Warriors",
   userName = "Staff",
   userRole = "owner",
+  gymLogo,
 }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -115,8 +117,8 @@ export function Sidebar({
         <div className="relative w-11 h-11 rounded-xl overflow-hidden ring-2 ring-red-600/50 shadow-md shrink-0 bg-black">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/logo.jpg"
-            alt="Alpha Warriors Logo"
+            src={gymLogo || "/logo.jpg"}
+            alt="Gym Logo"
             className="w-full h-full object-cover"
           />
         </div>
