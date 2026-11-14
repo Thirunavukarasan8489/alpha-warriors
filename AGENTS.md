@@ -292,3 +292,17 @@ Indexes on day one: `members(gymId, phone)` unique, `members(gymId, name)`, `mem
      - `alpha-warriors/{gymId}/products`: POS merchandise and supplement product images.
    - **Upload Endpoint**: `POST /api/upload` accepts `multipart/form-data` and JSON base64 data URIs, applies dimension constraints (800px–1200px) and auto-format/auto-quality transformations (`f_auto, q_auto:good`), and returns CDN secure URLs.
    - **Frontend Uploader**: `PhotoUploader.tsx` provides zero-latency client previews, animated loading states with spinner overlays, mobile camera support (`capture="user"`), error toast handling, and removal triggers.
+
+7. **User Profile Avatars & Role-Based Settings Navigation**:
+   - **User Schema**: Extended with `photo?: string` on `IUser` and `UserSchema`.
+   - **Self-Service Profile (`/api/auth/me`)**:
+     - `GET`: Exposes current authenticated user details including `photo`.
+     - `PATCH`: Enables authenticated users (`owner`, `manager`, `receptionist`, `trainer`) to update their own `name`, `email`, and `photo` with immediate validation.
+   - **Header & Sidebar User Avatars**: Top-right AppShell header and desktop Sidebar footer render the user's custom profile photo when set, with graceful fallback to their name's initial letter. Clickable link routes directly to `/settings`.
+   - **Event-Driven Synchronization**: Updates to gym logo or profile photo broadcast an `auth-changed` DOM event, triggering instant zero-flicker re-renders of the AppShell header without requiring a page refresh.
+   - **Settings Access Across All Roles**:
+     - `trainer`: Settings tab added to mobile bottom navigation and desktop sidebar. Displays self-service "My Profile & Account" to edit name, email, upload profile picture, change password, and sign out.
+     - `manager` & `receptionist`: Settings link added to the "More" drawer and desktop sidebar with profile editing and password management.
+     - `owner`: Retains full administrative access (Gym Profile, Billing Defaults, WhatsApp Templates, CSV Import, and Personal Profile).
+   - **Gym Logo Persistence**: `PATCH /api/settings` and form submissions immediately persist uploaded logos to `Gym.logo` in MongoDB.
+

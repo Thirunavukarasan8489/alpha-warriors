@@ -41,6 +41,15 @@ interface GymSettingsData {
   };
 }
 
+interface UserProfileData {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  role: string;
+  photo?: string;
+}
+
 export default function SettingsPage() {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -52,9 +61,13 @@ export default function SettingsPage() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
 
   // Settings State
   const [gymData, setGymData] = useState<GymSettingsData | null>(null);
+
+  // User Profile State
+  const [profileData, setProfileData] = useState<UserProfileData | null>(null);
 
   // Template State
   const [templates, setTemplates] = useState({
@@ -88,6 +101,16 @@ export default function SettingsPage() {
     try {
       const meRes = await fetch("/api/auth/me");
       const meJson = await meRes.json();
+      if (meJson.data?.user) {
+        setProfileData({
+          id: meJson.data.user.id,
+          name: meJson.data.user.name || "",
+          phone: meJson.data.user.phone || "",
+          email: meJson.data.user.email || "",
+          role: meJson.data.user.role || "owner",
+          photo: meJson.data.user.photo || "",
+        });
+      }
       const role = meJson.data?.user?.role || "owner";
       setCurrentUserRole(role);
 
@@ -134,6 +157,7 @@ export default function SettingsPage() {
           address: gymData.address,
           gstin: gymData.gstin,
           state: gymData.state,
+          logo: gymData.logo,
           defaultTaxPercent: gymData.settings.defaultTaxPercent,
           expiringSoonDays: gymData.settings.expiringSoonDays,
           invoicePrefix: gymData.settings.invoicePrefix,
@@ -144,11 +168,40 @@ export default function SettingsPage() {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error?.message || "Failed to update settings");
 
+      window.dispatchEvent(new Event("auth-changed"));
       toast("Settings saved successfully!", "success");
     } catch (err: any) {
       toast(err.message || "An error occurred", "error");
     } finally {
       setSaving(false);
+    }
+  };
+
+  // Save User Profile (Name, Email, Profile Image)
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!profileData) return;
+    setSavingProfile(true);
+    try {
+      const res = await fetch("/api/auth/me", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: profileData.name,
+          email: profileData.email,
+          photo: profileData.photo,
+        }),
+      });
+
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error?.message || "Failed to update profile");
+
+      window.dispatchEvent(new Event("auth-changed"));
+      toast("Profile updated successfully!", "success");
+    } catch (err: any) {
+      toast(err.message || "An error occurred", "error");
+    } finally {
+      setSavingProfile(false);
     }
   };
 
@@ -326,10 +379,12 @@ export default function SettingsPage() {
       {/* Header */}
       <div>
         <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
-          Gym Settings & Configuration
+          {currentUserRole === "owner" ? "Gym Settings & Configuration" : "Profile & Account Settings"}
         </h1>
         <p className="text-xs text-gray-500">
-          Manage business credentials, billing parameters, reminder templates, and bulk data import
+          {currentUserRole === "owner"
+            ? "Manage business credentials, billing parameters, reminder templates, and bulk data import"
+            : "Update your profile details, upload your avatar, and manage account security"}
         </p>
       </div>
 
@@ -341,9 +396,9 @@ export default function SettingsPage() {
               { id: "billing", label: "Billing Defaults", icon: Receipt },
               { id: "templates", label: "WhatsApp Templates", icon: MessageSquare },
               { id: "import", label: "Import Members", icon: UploadCloud },
-              { id: "account", label: "My Account", icon: User },
+              { id: "account", label: "My Profile & Account", icon: User },
             ]
-          : [{ id: "account", label: "My Account & Password", icon: User }]
+          : [{ id: "account", label: "My Profile & Account", icon: User }]
         ).map((tab) => {
           const Icon = tab.icon;
           return (
@@ -376,7 +431,20 @@ export default function SettingsPage() {
             <div className="pb-3 border-b border-gray-100">
               <PhotoUploader
                 value={gymData.logo}
-                onChange={(url) => setGymData({ ...gymData, logo: url })}
+                onChange={async (url) => {
+                  setGymData((prev) => (prev ? { ...prev, logo: url } : null));
+                  try {
+                    await fetch("/api/settings", {
+                      method: "PATCH",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ logo: url }),
+                    });
+                    window.dispatchEvent(new Event("auth-changed"));
+                    toast("Gym logo updated!", "success");
+                  } catch (e) {
+                    console.error("Auto-save logo error:", e);
+                  }
+                }}
                 folder="branding"
                 label="Gym Logo (Shown on tax receipts, invoice printouts & member pass)"
               />
@@ -830,6 +898,115 @@ export default function SettingsPage() {
       {/* 5. ACCOUNT SECTION */}
       {activeTab === "account" && (
         <div className="space-y-6">
+          {/* User Profile Details Card */}
+          {profileData && (
+            <form onSubmit={handleSaveProfile} className="bg-white rounded-2xl p-6 border border-gray-200/80 shadow-xs space-y-4">
+              <h2 className="font-bold text-sm text-gray-900 pb-2 border-b border-gray-100 flex items-center gap-2">
+                <User className="w-4 h-4 text-red-600" />
+                My Profile Details
+              </h2>
+
+              {/* Profile Photo Uploader */}
+              <div className="pb-3 border-b border-gray-100">
+                <PhotoUploader
+                  value={profileData.photo}
+                  onChange={async (url) => {
+                    setProfileData((prev) => (prev ? { ...prev, photo: url } : null));
+                    try {
+                      await fetch("/api/auth/me", {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ photo: url }),
+                      });
+                      window.dispatchEvent(new Event("auth-changed"));
+                      toast("Profile photo updated!", "success");
+                    } catch (e) {
+                      console.error("Auto-save photo error:", e);
+                    }
+                  }}
+                  folder="staff"
+                  label="Profile Photo (Shown in header avatar and coach profile)"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={profileData.name}
+                    onChange={(e) =>
+                      setProfileData((prev) => (prev ? { ...prev, name: e.target.value } : null))
+                    }
+                    required
+                    className="w-full px-3.5 py-2 text-xs sm:text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 font-bold"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={profileData.email}
+                    onChange={(e) =>
+                      setProfileData((prev) => (prev ? { ...prev, email: e.target.value } : null))
+                    }
+                    placeholder="name@domain.com"
+                    className="w-full px-3.5 py-2 text-xs sm:text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
+                    Phone Number (Login ID)
+                  </label>
+                  <div className="px-3.5 py-2.5 bg-gray-100/80 border border-gray-200 rounded-xl text-xs sm:text-sm font-mono text-gray-700 select-none">
+                    {profileData.phone || "—"}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
+                    Assigned Role
+                  </label>
+                  <div className="px-3.5 py-2.5 bg-gray-100/80 border border-gray-200 rounded-xl text-xs sm:text-sm flex items-center justify-between">
+                    <span className="font-bold text-gray-900 capitalize">{profileData.role}</span>
+                    <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-red-50 text-red-600 border border-red-200">
+                      Active
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="submit"
+                  disabled={savingProfile}
+                  className="inline-flex items-center justify-center gap-1.5 px-6 py-2.5 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-xs transition touch-manipulation cursor-pointer"
+                >
+                  {savingProfile ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Saving Profile...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-3.5 h-3.5" />
+                      <span>Save Profile Details</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* Change Password Form */}
           <form onSubmit={handleChangePassword} className="bg-white rounded-2xl p-6 border border-gray-200/80 shadow-xs space-y-4">
             <h2 className="font-bold text-sm text-gray-900 pb-2 border-b border-gray-100 flex items-center gap-2">
               <Lock className="w-4 h-4 text-red-600" />

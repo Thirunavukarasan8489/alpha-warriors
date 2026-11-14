@@ -51,6 +51,7 @@ export function BottomTabs({ userRole = "owner" }: BottomTabsProps) {
           { href: "/", label: "Home", icon: LayoutDashboard },
           { href: "/members", label: "My Athletes", icon: Users },
           { href: "/attendance", label: "Attendance", icon: CalendarCheck },
+          { href: "/settings", label: "Settings", icon: Settings },
         ],
         moreItems: [],
       };
@@ -69,6 +70,7 @@ export function BottomTabs({ userRole = "owner" }: BottomTabsProps) {
           { href: "/reminders", label: "Reminders", icon: Bell },
           { href: "/sales", label: "POS Sales", icon: ShoppingBag },
           { href: "/leads", label: "Leads CRM", icon: Flame },
+          { href: "/settings", label: "Settings", icon: Settings },
         ],
       };
     }
@@ -90,6 +92,7 @@ export function BottomTabs({ userRole = "owner" }: BottomTabsProps) {
           { href: "/reminders", label: "Reminders", icon: Bell },
           { href: "/expenses", label: "Expenses", icon: Wallet },
           { href: "/staff", label: "Staff", icon: UserCheck },
+          { href: "/settings", label: "Settings", icon: Settings },
         ],
       };
     }

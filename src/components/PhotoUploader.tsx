@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { Camera, Trash2, User, Loader2, CloudCheck, AlertCircle } from "lucide-react";
+import { Camera, Trash2, User, Building2, Loader2 } from "lucide-react";
 import { useToast } from "@/components/Toast";
 
 interface PhotoUploaderProps {
@@ -98,6 +98,8 @@ export function PhotoUploader({
               uploading ? "opacity-40" : "opacity-100"
             }`}
           />
+        ) : folder === "branding" ? (
+          <Building2 className="w-10 h-10 sm:w-8 sm:h-8 text-gray-400" />
         ) : (
           <User className="w-10 h-10 sm:w-8 sm:h-8 text-gray-400" />
         )}

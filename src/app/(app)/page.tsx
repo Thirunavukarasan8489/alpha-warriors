@@ -228,18 +228,18 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Top Header Row with Logo Badge */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl overflow-hidden ring-2 ring-red-600/40 shadow-xs bg-black shrink-0">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="hidden sm:block w-11 h-11 rounded-xl overflow-hidden ring-2 ring-red-600/40 shadow-xs bg-black shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo.jpg" alt="Alpha Warriors" className="w-full h-full object-cover" />
           </div>
-          <div>
-            <h1 className="text-xl sm:text-2xl font-black text-gray-950 tracking-tight uppercase">
+          <div className="min-w-0">
+            <h1 className="text-lg sm:text-2xl font-black text-gray-950 tracking-tight uppercase truncate">
               Dashboard Overview
             </h1>
-            <p className="text-xs text-red-600 font-extrabold uppercase tracking-wider">
-              Alpha Warriors Management System
+            <p className="text-[10px] sm:text-xs text-red-600 font-extrabold uppercase tracking-wider truncate">
+              {data.gymName || "Alpha Warriors"} Management System
             </p>
           </div>
         </div>
@@ -247,17 +247,17 @@ export default function DashboardPage() {
         {data.userRole === "trainer" ? (
           <Link
             href="/members"
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-red-600/20 transition"
+            className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-red-600/20 transition shrink-0"
           >
-            <Users className="w-4 h-4" />
+            <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span>My Athletes</span>
           </Link>
         ) : (
           <Link
             href="/members/new"
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-red-600/20 transition"
+            className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-red-600/20 transition shrink-0"
           >
-            <PlusCircle className="w-4 h-4" />
+            <PlusCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span>Add Member</span>
           </Link>
         )}

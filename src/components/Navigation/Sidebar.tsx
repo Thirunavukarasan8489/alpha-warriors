@@ -27,6 +27,7 @@ interface SidebarProps {
   userName?: string;
   userRole?: string;
   gymLogo?: string;
+  userPhoto?: string;
 }
 
 export function Sidebar({
@@ -34,6 +35,7 @@ export function Sidebar({
   userName = "Staff",
   userRole = "owner",
   gymLogo,
+  userPhoto,
 }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -56,6 +58,7 @@ export function Sidebar({
           { href: "/", label: "Dashboard", icon: LayoutDashboard },
           { href: "/members", label: "My Athletes", icon: Users },
           { href: "/attendance", label: "Attendance", icon: CalendarCheck },
+          { href: "/settings", label: "Settings", icon: Settings },
         ];
 
       case "receptionist":
@@ -68,6 +71,7 @@ export function Sidebar({
           { href: "/reminders", label: "Reminders", icon: Bell },
           { href: "/sales", label: "POS Sales", icon: ShoppingBag },
           { href: "/leads", label: "Leads CRM", icon: Flame },
+          { href: "/settings", label: "Settings", icon: Settings },
         ];
 
       case "manager":
@@ -84,6 +88,7 @@ export function Sidebar({
           { href: "/reminders", label: "Reminders", icon: Bell },
           { href: "/expenses", label: "Expenses", icon: Wallet },
           { href: "/staff", label: "Staff", icon: UserCheck },
+          { href: "/settings", label: "Settings", icon: Settings },
         ];
 
       case "owner":
@@ -161,12 +166,32 @@ export function Sidebar({
       {/* User profile & Logout */}
       <div className="p-3 border-t border-slate-900 bg-slate-950/50">
         <div className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800/60 flex items-center justify-between">
-          <div className="min-w-0 pr-2">
-            <p className="text-xs font-bold text-white truncate">{userName}</p>
-            <p className="text-[10px] text-red-400 uppercase font-bold tracking-wider capitalize">
-              {userRole}
-            </p>
-          </div>
+          <Link
+            href="/settings"
+            className="flex items-center gap-2.5 min-w-0 pr-2 hover:opacity-80 transition group"
+            title="Account Settings"
+          >
+            <div className="w-8 h-8 rounded-lg overflow-hidden bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 text-white text-xs font-bold">
+              {userPhoto ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={userPhoto}
+                  alt={userName}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                userName.charAt(0).toUpperCase()
+              )}
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-white truncate group-hover:text-red-400 transition">
+                {userName}
+              </p>
+              <p className="text-[10px] text-red-400 uppercase font-bold tracking-wider capitalize">
+                {userRole}
+              </p>
+            </div>
+          </Link>
           <button
             type="button"
             onClick={handleLogout}

@@ -33,6 +33,7 @@ export async function GET() {
           phone: user.phone,
           email: user.email,
           role: user.role,
+          photo: user.photo,
         },
         gym: {
           id: gym._id,
@@ -52,6 +53,71 @@ export async function GET() {
     console.error("Auth me error:", error);
     return NextResponse.json(
       { error: { code: "SERVER_ERROR", message: "Failed to fetch user session" } },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(req: Request) {
+  const authResult = await requireAuth(["owner", "manager", "receptionist", "trainer"]);
+  if ("response" in authResult) return authResult.response;
+
+  const { auth } = authResult;
+
+  try {
+    const body = await req.json();
+    const { name, email, photo } = body;
+
+    await connectDB();
+
+    const updateFields: Record<string, unknown> = {};
+
+    if (name && typeof name === "string") {
+      const trimmed = name.trim();
+      if (trimmed.length < 2) {
+        return NextResponse.json(
+          { error: { code: "VALIDATION_ERROR", message: "Name must be at least 2 characters" } },
+          { status: 422 }
+        );
+      }
+      updateFields.name = trimmed;
+    }
+
+    if (email !== undefined) {
+      updateFields.email = email ? email.trim().toLowerCase() : "";
+    }
+
+    if (photo !== undefined) {
+      updateFields.photo = photo || "";
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      auth.userId,
+      { $set: updateFields },
+      { new: true }
+    ).select("-passwordHash");
+
+    if (!updatedUser) {
+      return NextResponse.json(
+        { error: { code: "NOT_FOUND", message: "User not found" } },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      data: {
+        id: updatedUser._id,
+        name: updatedUser.name,
+        phone: updatedUser.phone,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        photo: updatedUser.photo,
+      },
+    });
+  } catch (error: unknown) {
+    console.error("Update profile error:", error);
+    return NextResponse.json(
+      { error: { code: "SERVER_ERROR", message: "Failed to update profile" } },
       { status: 500 }
     );
   }

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { Sidebar } from "./Sidebar";
 import { BottomTabs } from "./BottomTabs";
 import { FloatingActionButton } from "./FloatingActionButton";
@@ -19,6 +20,7 @@ export function AppShell({ children }: AppShellProps) {
     gymName: string;
     userName: string;
     userRole: string;
+    userPhoto?: string;
     branchName?: string;
     gymLogo?: string;
   }>({
@@ -30,7 +32,7 @@ export function AppShell({ children }: AppShellProps) {
 
   const [isCollectPaymentOpen, setIsCollectPaymentOpen] = useState(false);
 
-  useEffect(() => {
+  const loadAuth = () => {
     fetch("/api/auth/me")
       .then((res) => res.json())
       .then((data) => {
@@ -39,12 +41,19 @@ export function AppShell({ children }: AppShellProps) {
             gymName: data.data.gym.name,
             userName: data.data.user.name,
             userRole: data.data.user.role,
+            userPhoto: data.data.user.photo,
             branchName: data.data.branches?.[0]?.name || "Main Branch",
             gymLogo: data.data.gym.logo,
           });
         }
       })
       .catch((err) => console.error("Error loading auth info:", err));
+  };
+
+  useEffect(() => {
+    loadAuth();
+    window.addEventListener("auth-changed", loadAuth);
+    return () => window.removeEventListener("auth-changed", loadAuth);
   }, []);
 
   return (
@@ -56,6 +65,7 @@ export function AppShell({ children }: AppShellProps) {
           userName={gymInfo.userName}
           userRole={gymInfo.userRole}
           gymLogo={gymInfo.gymLogo}
+          userPhoto={gymInfo.userPhoto}
         />
 
         {/* Main Content Area */}
@@ -95,17 +105,32 @@ export function AppShell({ children }: AppShellProps) {
               <span className="hidden sm:inline-block text-xs font-semibold text-gray-600 bg-gray-100 px-3 py-1 rounded-full border border-gray-200/60">
                 {formatDate(new Date())}
               </span>
-              <div className="flex items-center gap-2.5 pl-2 border-l border-gray-200">
-                <div className="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs uppercase shadow-xs ring-1 ring-slate-800">
-                  {gymInfo.userName.charAt(0)}
+              <Link
+                href="/settings"
+                title="Account Settings"
+                className="flex items-center gap-2.5 pl-2 border-l border-gray-200 hover:opacity-85 transition group"
+              >
+                <div className="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs uppercase shadow-xs ring-1 ring-slate-800 overflow-hidden shrink-0">
+                  {gymInfo.userPhoto ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={gymInfo.userPhoto}
+                      alt={gymInfo.userName}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    gymInfo.userName.charAt(0)
+                  )}
                 </div>
                 <div className="hidden lg:block text-left">
-                  <p className="text-xs font-bold text-gray-900 leading-none">{gymInfo.userName}</p>
+                  <p className="text-xs font-bold text-gray-900 leading-none group-hover:text-red-600 transition">
+                    {gymInfo.userName}
+                  </p>
                   <p className="text-[10px] text-red-600 font-extrabold capitalize mt-0.5 tracking-wide">
                     {gymInfo.userRole}
                   </p>
                 </div>
-              </div>
+              </Link>
             </div>
           </header>
 
