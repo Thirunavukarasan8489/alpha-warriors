@@ -382,54 +382,60 @@ export default function MemberProfilePage() {
             </div>
           </div>
 
-          {/* Quick Primary Actions: Renew, Collect Payment, More Menu */}
-          <div className="flex items-center gap-2.5 pt-3 sm:pt-0 border-t sm:border-0 border-gray-100">
+          {/* Quick Primary Actions: Renew, Collect Payment, Training, More Menu */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-3 sm:pt-0 border-t sm:border-0 border-gray-100 w-full sm:w-auto">
             {currentUserRole !== "trainer" && (
-              <>
+              <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
                 <button
                   type="button"
                   onClick={() => setShowRenewModal(true)}
-                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition"
+                  className="inline-flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2.5 bg-red-600 hover:bg-red-700 active:scale-[0.98] text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition"
                 >
-                  <RefreshCw className="w-4 h-4" />
-                  Renew
+                  <RefreshCw className="w-4 h-4 shrink-0" />
+                  <span>Renew</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setShowCollectPayment(true)}
-                  className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition"
+                  className="inline-flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition"
                 >
-                  <CreditCard className="w-4 h-4" />
-                  Collect Payment
+                  <CreditCard className="w-4 h-4 shrink-0" />
+                  <span className="truncate">Collect Payment</span>
                 </button>
-              </>
+              </div>
             )}
 
-            <Link
-              href={`/members/${member.id}/training`}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-slate-900 hover:bg-black text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition"
-            >
-              <Dumbbell className="w-4 h-4 text-red-500" />
-              Training
-            </Link>
-
-            {/* More Menu Dropdown */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setShowMoreMenu(!showMoreMenu)}
-                className="p-2.5 rounded-xl border border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-700 transition"
-                title="More Actions"
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Link
+                href={`/members/${member.id}/training`}
+                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2.5 bg-slate-900 hover:bg-black active:scale-[0.98] text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition"
               >
-                <MoreVertical className="w-4 h-4" />
-              </button>
+                <Dumbbell className="w-4 h-4 text-red-500 shrink-0" />
+                <span>Training</span>
+              </Link>
 
-              {showMoreMenu && (
-                <div
-                  className="absolute right-0 top-12 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 py-1.5 z-30 divide-y divide-gray-100 text-xs font-semibold"
-                  onClick={() => setShowMoreMenu(false)}
+              {/* More Menu Dropdown */}
+              <div className="relative shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setShowMoreMenu(!showMoreMenu)}
+                  className="p-2.5 rounded-xl border border-gray-200 bg-gray-50 hover:bg-gray-100 active:bg-gray-200 text-gray-700 transition"
+                  title="More Actions"
                 >
+                  <MoreVertical className="w-4 h-4" />
+                </button>
+
+                {showMoreMenu && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-20"
+                      onClick={() => setShowMoreMenu(false)}
+                    />
+                    <div
+                      className="absolute right-0 top-12 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 py-1.5 z-30 divide-y divide-gray-100 text-xs font-semibold animate-in fade-in zoom-in-95 duration-100"
+                      onClick={() => setShowMoreMenu(false)}
+                    >
                   <div className="py-1">
                     <button
                       type="button"
@@ -528,10 +534,12 @@ export default function MemberProfilePage() {
                     </div>
                   )}
                 </div>
-              )}
-            </div>
+              </>
+            )}
           </div>
         </div>
+      </div>
+    </div>
 
         {/* Status Metrics Strip */}
         <div className="mt-5 pt-4 border-t border-gray-100 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">

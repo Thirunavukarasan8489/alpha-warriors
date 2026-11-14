@@ -306,3 +306,14 @@ Indexes on day one: `members(gymId, phone)` unique, `members(gymId, name)`, `mem
      - `owner`: Retains full administrative access (Gym Profile, Billing Defaults, WhatsApp Templates, CSV Import, and Personal Profile).
    - **Gym Logo Persistence**: `PATCH /api/settings` and form submissions immediately persist uploaded logos to `Gym.logo` in MongoDB.
 
+8. **Interactive Canvas Image Cropper & Responsive Action Layouts**:
+   - **Interactive Crop Modal (`ImageCropModal.tsx`)**:
+     - Embedded in `PhotoUploader.tsx` for member portraits, staff avatars, and gym logos.
+     - Features touch/mouse dragging to pan, smooth zoom slider (`1x` to `3.5x`) with pinch-to-zoom and wheel zoom, 90° clockwise rotation, reset adjustments, rule-of-thirds alignment grid, and darkened vignette aperture.
+     - Exports an optimized 800x800 high-resolution JPEG directly into Cloudinary without external library dependencies.
+     - Offers both "Crop & Upload" and "Use Full Image" bypass fallback.
+   - **Member Profile Mobile Action Grid**:
+     - In `src/app/(app)/members/[id]/page.tsx`, primary action buttons feature a 2-tier responsive grid on mobile: Row 1 hosts `[Renew]` (50%) and `[Collect Payment]` (50%), while Row 2 hosts `[Training]` and the `[ ⋮ ]` more menu dropdown.
+     - On desktop (>=640px), seamlessly flexes into a single horizontal row.
+     - Dot menu dropdown is secured with a click-outside backdrop overlay to eliminate edge clipping on narrow mobile screens (320px–390px).
+
