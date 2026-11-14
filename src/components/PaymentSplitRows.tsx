@@ -10,7 +10,8 @@ export interface SplitModeRow {
 }
 
 interface PaymentSplitRowsProps {
-  totalTargetAmount: number; // in paise
+  totalTargetAmount?: number; // in paise
+  totalPaise?: number; // alias in paise
   rows: SplitModeRow[];
   onChange: (newRows: SplitModeRow[]) => void;
   className?: string;
@@ -18,12 +19,14 @@ interface PaymentSplitRowsProps {
 
 export function PaymentSplitRows({
   totalTargetAmount,
+  totalPaise,
   rows,
   onChange,
   className = "",
 }: PaymentSplitRowsProps) {
+  const target = totalTargetAmount ?? totalPaise ?? 0;
   const currentSum = rows.reduce((acc, r) => acc + (r.amount || 0), 0);
-  const remaining = totalTargetAmount - currentSum;
+  const remaining = target - currentSum;
   const isBalanced = remaining === 0;
 
   const handleModeChange = (index: number, mode: SplitModeRow["mode"]) => {

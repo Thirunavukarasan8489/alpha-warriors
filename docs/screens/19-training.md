@@ -35,5 +35,5 @@ Everything a trainer records for one member.
 - **To:** `05-member-profile.md`, `09-plans.md` (sessions), `22-member-portal.md` (shows the current plans).
 
 ## Done when
-- [ ] Trainer role cannot read other trainers' members.
-- [ ] PAR-Q submissions cannot be edited later, only replaced by a new one.
+- [x] Trainer role cannot read other trainers' members.
+- [x] PAR-Q submissions cannot be edited later, only replaced by a new one.

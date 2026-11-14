@@ -22,6 +22,8 @@ import {
   AlertCircle,
   History,
   CheckCircle2,
+  Dumbbell,
+  Globe,
 } from "lucide-react";
 import { StatusBadge } from "@/components/StatusBadge";
 import { MoneyText } from "@/components/MoneyText";
@@ -32,7 +34,7 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { PlanPicker, PlanOption } from "@/components/PlanPicker";
 import { CollectPaymentModal } from "@/components/Navigation/CollectPaymentModal";
 import { formatPaise } from "@/lib/money";
-import { WhatsAppTemplates } from "@/lib/whatsapp";
+import { WhatsAppTemplates, buildShareLink } from "@/lib/whatsapp";
 import { useToast } from "@/components/Toast";
 
 interface MemberProfileData {
@@ -280,6 +282,36 @@ export default function MemberProfilePage() {
     }
   };
 
+  const handleSharePortalLink = async () => {
+    try {
+      const res = await fetch(`/api/members/${memberId}/portal-token`, { method: "POST" });
+      const data = await res.json();
+      if (res.ok) {
+        const text = `Hi ${data.data.memberName}, here is your personal Alpha Warriors member portal pass link to view your remaining plan days, invoices, attendance and workouts: ${data.data.portalUrl}`;
+        window.open(buildShareLink(data.data.phone, text), "_blank");
+        toast("Member portal link generated! Opening WhatsApp...", "success");
+      } else {
+        toast(data.error?.message || "Failed to generate portal link", "error");
+      }
+    } catch {
+      toast("Error creating portal link", "error");
+    }
+  };
+
+  const handleRevokePortalLink = async () => {
+    if (!confirm("Revoke this member's self-service portal link? An old link will no longer work.")) return;
+    try {
+      const res = await fetch(`/api/members/${memberId}/portal-token`, { method: "DELETE" });
+      if (res.ok) {
+        toast("Member portal link revoked", "success");
+      } else {
+        toast("Failed to revoke link", "error");
+      }
+    } catch {
+      toast("Error revoking portal link", "error");
+    }
+  };
+
   if (loading || !member) {
     return (
       <div className="space-y-6">
@@ -361,6 +393,14 @@ export default function MemberProfilePage() {
               Collect Payment
             </button>
 
+            <Link
+              href={`/members/${member.id}/training`}
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-slate-900 hover:bg-black text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition"
+            >
+              <Dumbbell className="w-4 h-4 text-red-500" />
+              Training
+            </Link>
+
             {/* More Menu Dropdown */}
             <div className="relative">
               <button
@@ -393,6 +433,22 @@ export default function MemberProfilePage() {
                       <Edit className="w-4 h-4 text-gray-400" />
                       Edit Details
                     </Link>
+                    <button
+                      type="button"
+                      onClick={handleSharePortalLink}
+                      className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-emerald-700 font-bold"
+                    >
+                      <Globe className="w-4 h-4 text-emerald-600" />
+                      Share Portal Link
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleRevokePortalLink}
+                      className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-gray-500"
+                    >
+                      <AlertCircle className="w-4 h-4 text-gray-400" />
+                      Revoke Portal Link
+                    </button>
                   </div>
 
                   {member.currentMembership && (

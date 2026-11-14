@@ -5,6 +5,7 @@ import { Sidebar } from "./Sidebar";
 import { BottomTabs } from "./BottomTabs";
 import { FloatingActionButton } from "./FloatingActionButton";
 import { CollectPaymentModal } from "./CollectPaymentModal";
+import { BranchSwitcher } from "./BranchSwitcher";
 import { ToastProvider } from "@/components/Toast";
 import { MapPin } from "lucide-react";
 import { formatDate } from "@/lib/dates";
@@ -75,9 +76,13 @@ export function AppShell({ children }: AppShellProps) {
                     Fitness
                   </span>
                 </h2>
-                <div className="flex items-center gap-1 text-[11px] text-gray-500 font-medium">
-                  <MapPin className="w-3 h-3 text-red-500" />
-                  <span>{gymInfo.branchName}</span>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <BranchSwitcher
+                    userRole={gymInfo.userRole}
+                    onBranchChange={(_, branchName) => {
+                      setGymInfo((prev) => ({ ...prev, branchName }));
+                    }}
+                  />
                 </div>
               </div>
             </div>

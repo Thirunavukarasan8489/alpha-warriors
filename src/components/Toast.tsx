@@ -9,8 +9,9 @@ interface Toast {
   message: string;
 }
 
-interface ToastContextType {
+export interface ToastContextType {
   toast: (message: string, type?: "success" | "error" | "info") => void;
+  showToast: (message: string, type?: "success" | "error" | "info" | "warning") => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -27,12 +28,17 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     }, 4000);
   }, []);
 
+  const showToast = useCallback((message: string, type: "success" | "error" | "info" | "warning" = "info") => {
+    const mappedType = type === "warning" ? "info" : type;
+    toast(message, mappedType);
+  }, [toast]);
+
   const removeToast = (id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
   return (
-    <ToastContext.Provider value={{ toast }}>
+    <ToastContext.Provider value={{ toast, showToast }}>
       {children}
       <div className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none">
         {toasts.map((t) => (

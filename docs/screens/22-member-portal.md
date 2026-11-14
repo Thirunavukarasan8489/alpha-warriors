@@ -29,5 +29,5 @@ Let a member check their own plan, dues and attendance on their phone without in
 - **To:** `12-invoices.md` public invoice page.
 
 ## Done when
-- [ ] A revoked or guessed token shows nothing about any member.
-- [ ] Page works on a low-end phone over a slow connection.
+- [x] A revoked or guessed token shows nothing about any member.
+- [x] Page works on a low-end phone over a slow connection.

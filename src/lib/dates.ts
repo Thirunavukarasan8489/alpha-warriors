@@ -120,6 +120,8 @@ export function diffInDays(dateA: Date | string, dateB: Date | string = new Date
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
 
+export const getDaysDifference = diffInDays;
+
 /**
  * Get today's start and end timestamps in UTC corresponding to Asia/Kolkata
  */

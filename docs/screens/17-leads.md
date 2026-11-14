@@ -28,5 +28,5 @@ Name, phone, source (walk-in, referral, social media, other), interest, follow-u
 - **To:** `04-member-form.md`, then `05-member-profile.md`.
 
 ## Done when
-- [ ] Overdue follow-ups are shown first.
-- [ ] A converted lead links to the new member.
+- [x] Overdue follow-ups are shown first.
+- [x] A converted lead links to the new member.

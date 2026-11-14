@@ -33,5 +33,5 @@ Work out and record monthly staff pay: salary, commission, deductions and leave.
 - **To:** `14-expenses.md`, `15-staff.md`.
 
 ## Done when
-- [ ] Net pay maths is covered by tests.
-- [ ] Each paid row shows once in expenses and once in the salary report.
+- [x] Net pay maths is covered by tests.
+- [x] Each paid row shows once in expenses and once in the salary report.

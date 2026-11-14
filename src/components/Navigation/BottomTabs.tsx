@@ -18,6 +18,10 @@ import {
   Settings,
   LogOut,
   X,
+  Flame,
+  ShoppingBag,
+  Banknote,
+  Building2,
 } from "lucide-react";
 
 export function BottomTabs() {
@@ -43,12 +47,16 @@ export function BottomTabs() {
   ];
 
   const moreItems = [
+    { href: "/leads", label: "Leads CRM", icon: Flame },
+    { href: "/sales", label: "POS Sales", icon: ShoppingBag },
     { href: "/plans", label: "Plans", icon: Layers },
     { href: "/reports", label: "Reports", icon: BarChart3 },
     { href: "/invoices", label: "Invoices", icon: Receipt },
     { href: "/reminders", label: "Reminders", icon: Bell },
     { href: "/expenses", label: "Expenses", icon: Wallet },
     { href: "/staff", label: "Staff", icon: UserCheck },
+    { href: "/staff/payroll", label: "Payroll", icon: Banknote },
+    { href: "/settings/branches", label: "Branches", icon: Building2 },
     { href: "/settings", label: "Settings", icon: Settings },
   ];
 

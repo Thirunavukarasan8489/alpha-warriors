@@ -29,5 +29,5 @@ Run more than one gym location from one account, with separate numbers for each.
 - **To:** all list and report screens through the `branchId` filter.
 
 ## Done when
-- [ ] "All branches" totals equal the sum of each branch.
-- [ ] A manager of branch A cannot read branch B data by editing the request.
+- [x] "All branches" totals equal the sum of each branch.
+- [x] A manager of branch A cannot read branch B data by editing the request.

@@ -10,4 +10,11 @@ export * from "./Attendance";
 export * from "./AuditLog";
 export * from "./Message";
 export * from "./Expense";
-
+export * from "./Lead";
+export * from "./Product";
+export * from "./Sale";
+export * from "./WorkoutPlan";
+export * from "./DietPlan";
+export * from "./PTSession";
+export * from "./PARQForm";
+export * from "./PayrollRun";

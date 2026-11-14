@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, User, Phone, Mail, MapPin, Calendar, Check, AlertCircle } from "lucide-react";
 import { PhotoUploader } from "@/components/PhotoUploader";
 import { PlanPicker, PlanOption } from "@/components/PlanPicker";
@@ -17,8 +17,9 @@ interface TrainerOption {
   name: string;
 }
 
-export default function NewMemberPage() {
+function NewMemberForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
 
   const [loading, setLoading] = useState(false);
@@ -26,8 +27,8 @@ export default function NewMemberPage() {
 
   // Form state
   const [photo, setPhoto] = useState("");
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [name, setName] = useState(searchParams.get("name") || "");
+  const [phone, setPhone] = useState(searchParams.get("phone") || "");
   const [whatsappSameAsPhone, setWhatsappSameAsPhone] = useState(true);
   const [whatsapp, setWhatsapp] = useState("");
   const [email, setEmail] = useState("");
@@ -139,6 +140,16 @@ export default function NewMemberPage() {
       }
 
       toast("Member registered successfully!", "success");
+
+      const leadId = searchParams.get("leadId");
+      if (leadId && json.data?.member?.id) {
+        fetch(`/api/leads/${leadId}/convert`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ memberId: json.data.member.id }),
+        }).catch((err) => console.error("Error converting lead:", err));
+      }
+
       router.push(`/members/${json.data.member.id}`);
     } catch (err: unknown) {
       toast((err as Error).message || "An error occurred", "error");
@@ -425,4 +436,19 @@ export default function NewMemberPage() {
     </div>
   );
 }
+
+export default function NewMemberPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="p-12 text-center text-sm font-semibold text-gray-500">
+          Loading registration form...
+        </div>
+      }
+    >
+      <NewMemberForm />
+    </React.Suspense>
+  );
+}
+
 

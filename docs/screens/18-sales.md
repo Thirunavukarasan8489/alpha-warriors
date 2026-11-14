@@ -31,5 +31,5 @@ Sell supplements and merchandise to members and walk-in guests, and track stock 
 - **To:** `05-member-profile.md`, `11-reports.md`.
 
 ## Done when
-- [ ] Stock and sales always agree after voids.
-- [ ] Low-stock badge shows on the Products tab.
+- [x] Stock and sales always agree after voids.
+- [x] Low-stock badge shows on the Products tab.

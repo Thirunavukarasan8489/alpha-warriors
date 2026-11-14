@@ -6,6 +6,7 @@ export interface IBranch extends Document {
   address?: string;
   phone?: string;
   isDefault: boolean;
+  isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -17,6 +18,7 @@ const BranchSchema = new Schema<IBranch>(
     address: { type: String },
     phone: { type: String },
     isDefault: { type: Boolean, default: false },
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

@@ -192,12 +192,72 @@ Indexes on day one: `members(gymId, phone)` unique, `members(gymId, name)`, `mem
 - Build phase 3 screens before phase 1 is working with a real gym.
 - Add biometric device integration, online payment gateway or AI workouts in the first release.
 
-## 9. Screen status
+## 9. Screen status and progress log
 
-Update this table as you go (Not started, In progress, Done).
+### Detailed screen status
 
-| # | Screen | Status |
-| --- | --- | --- |
-| 01–11 | Phase 1 screens | Done |
-| 12–16 | Phase 2 screens | Done |
-| 17–22 | Phase 3 screens | Not started |
+| # | Screen | Route | Phase | Status | Notes |
+| --- | --- | --- | --- | --- | --- |
+| 01 | Login and register | `/login`, `/register` | 1 | **Done** | Multi-tenant org onboarding, JWT httpOnly cookie auth, Alpha Warriors branding |
+| 02 | Dashboard | `/` | 1 | **Done** | Real-time stats (Active Warriors, Check-ins, Revenue, Dues), quick shortcuts |
+| 03 | Members list | `/members` | 1 | **Done** | Search, status filters, mobile cards / desktop table, responsive list |
+| 04 | Add or edit member | `/members/new`, `/members/[id]/edit` | 1 | **Done** | Canvas photo resizing, unique phone check, initial plan & split payments |
+| 05 | Member profile | `/members/[id]` | 1 | **Done** | History tabs (Memberships, Invoices, Attendance, Notes), digital QR modal |
+| 06 | Collect payment (modal) | UI component | 1 | **Done** | Multi-mode split rows (Cash, UPI, Card, Bank), auto balance update |
+| 07 | Membership actions | Modals on `05` | 1–2 | **Done** | Renew, Freeze, Resume, Extend, Upgrade (unused credit), Terminate |
+| 08 | Attendance | `/attendance` | 1 | **Done** | Fast-search check-in, 1-tap undo, QR scanner modal, Missed 7+ days tab with WhatsApp |
+| 09 | Plans | `/plans` | 1 | **Done** | Subscription packages, GST tax calculation, session quotas, active toggle |
+| 10 | Payments and dues | `/payments` | 1 | **Done** | Transactions log, mode breakdowns, pending dues list with WhatsApp remind |
+| 11 | Reports | `/reports` | 1–2 | **Done** | Daily attendance, expiring memberships, monthly revenue, trends, CSV export |
+| 12 | Invoices | `/invoices`, `/invoices/[id]`, `/i/[token]` | 2 | **Done** | Print stylesheet, public verified receipt page (`/i/[token]`), revocable share token |
+| 13 | Reminders | `/reminders` | 2 | **Done** | Expiring, Expired, and Dues tabs; Next-member queue mode; manual WhatsApp links |
+| 14 | Expenses | `/expenses` | 2 | **Done** | Monthly overhead picker, category pills, soft delete; Owner & Manager only |
+| 15 | Staff | `/staff`, `/staff/new`, `/staff/[id]` | 2 | **Done** | Role assignment, one-time temporary passwords, WhatsApp credential sharing, RBAC |
+| 16 | Settings | `/settings` | 2 | **Done** | Gym profile, GSTIN, billing sequences (`INV-`, `AW-`), templates, CSV dry-run import |
+| 17 | Leads | `/leads` | 3 | **Done** | Pipeline CRM, walk-in inquiries, trial workouts, overdue follow-ups first, 1-tap convert to member |
+| 18 | Sales | `/sales` | 3 | **Done** | POS merchandise/supplements cart, stock tracking, low-stock badges, split payments, receipts, void with stock restoration |
+| 19 | Training | `/members/[id]/training`, `/parq/[token]` | 3 | **Done** | Workout routines, meal plans, PT session quotas, digital PAR-Q questionnaire with medical advisories |
+| 20 | Branches | `/settings/branches` | 3 | **Done** | Multi-location management, header branch switcher, RBAC location scoping |
+| 21 | Payroll | `/staff/payroll` | 3 | **Done** | Monthly base salary + sales commissions, leave deductions, 1-click payout feeding salary expenses |
+| 22 | Member portal | `/portal/[token]` | 3 | **Done** | Athlete self-service pass: digital check-in QR, remaining days, invoice receipts, workouts & diet |
+
+---
+
+## 10. Implemented Architecture & Design Conventions (For Future Agents)
+
+1. **Brand & Theme Styling**:
+   - **Logo**: Stored at `public/logo.jpg` (Alpha Warriors badger emblem with "TRAIN • PUSH • DOMINATE").
+   - **Primary Palette**: Crimson Red (`#DC2626`, `red-600`, `red-700`) accenting buttons, active tabs, and badges.
+   - **Dark Slate / Obsidian**: `slate-950` / `slate-900` for headers, desktop sidebar, and summary totals cards.
+   - **Card Containers**: White cards with subtle borders (`border-gray-200/80`) on clean background (`#F8FAFC`).
+   - **Tailwind Setup**: Tailwind CSS v3 with PostCSS and Autoprefixer (`tailwind.config.ts`, `postcss.config.mjs`). Do not switch to experimental v4 without verifying Next.js Webpack loader compatibility.
+
+2. **Core Collections Implemented**:
+   - `Gym`: Organization metadata, GSTIN, state, logo, billing prefixes, alert thresholds, message templates.
+   - `Branch`: Gym location branches, active status, multi-branch scoping.
+   - `User`: Accounts with roles (`owner`, `manager`, `receptionist`, `trainer`, `member`), hashed passwords, active status, payroll configuration.
+   - `Member`: Unique per gym phone number, memberCode (`AW-1001`), photo, joined date, soft delete flag, `portalTokenHash`.
+   - `Plan`: Duration in days, price in paise, GST tax %, session quotas.
+   - `Membership`: Active/expired/frozen/ended subscriptions linked to member and plan.
+   - `Invoice`: Sequential invoice numbers (`INV-0001`), totalAmount, paidAmount, balance in paise, public `shareToken`.
+   - `Payment`: Append-only, never deleted, `modes` array (Cash, UPI, Card, Bank), `isVoid` flag with audit log.
+   - `Attendance`: Check-in timestamps, check-in source (`desk`, `qr`, `portal`), member reference.
+   - `Expense`: Facility overhead costs, categories (rent, electricity, salary, equipment, maintenance, marketing, other), soft delete.
+   - `Message`: Non-blocking audit log of WhatsApp reminder messages shared by staff.
+   - `AuditLog`: Immutable change history for security-sensitive actions.
+   - `Lead`: Prospective athlete pipeline (new, contacted, trial, won, lost), overdue follow-ups, convert to member.
+   - `Product`: Supplements & merchandise catalog, integer paise price & cost (cost hidden from receptionists), stock, low-stock threshold.
+   - `Sale`: POS sales records, multi-item cart, guest/member customers, payment mode splits, stock management, void action.
+   - `WorkoutPlan`: Weekly routine builder (days, exercises, sets, reps, notes), versioning, WhatsApp sharing.
+   - `DietPlan`: Meal timing & nutrition chart (time, meals, calories, protein), versioning, WhatsApp sharing.
+   - `PTSession`: 1-on-1 coaching logs deducting from plan session quotas.
+   - `PARQForm`: 7 standard physical readiness questions, digital signature, medical risk flag, immutable submissions.
+   - `PayrollRun`: Monthly payroll calculations (base salary + sales commissions - deductions), 1-click disbursement feeding Expense.
+
+3. **Security & Production Verification**:
+   - Every Route Handler validates `gymId` multi-tenancy and checks roles via `requireAuth()`.
+   - Financial amounts stored strictly as integer paise.
+   - Trainer access strictly restricted to assigned members.
+   - Secret-free public URLs: verified receipts `/i/[token]`, member self-service portal `/portal/[token]`, and PAR-Q questionnaire `/parq/[token]` use unguessable SHA-256 tokens.
+   - Manual WhatsApp links only (`wa.me`); no automatic SMS or messaging bots.
+   - Verified with Next.js 16 production build (`next build --webpack` with 0 errors across all 49 pages and API endpoints).

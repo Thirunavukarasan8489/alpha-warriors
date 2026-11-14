@@ -17,6 +17,10 @@ import {
   UserCheck,
   Settings,
   LogOut,
+  Flame,
+  ShoppingBag,
+  Banknote,
+  Building2,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -48,12 +52,20 @@ export function Sidebar({
     { href: "/members", label: "Members", icon: Users },
     { href: "/attendance", label: "Attendance", icon: CalendarCheck },
     { href: "/payments", label: "Payments & Dues", icon: CreditCard },
+    { href: "/leads", label: "Leads CRM", icon: Flame },
+    { href: "/sales", label: "POS Sales", icon: ShoppingBag },
     { href: "/plans", label: "Plans", icon: Layers },
     { href: "/reports", label: "Reports", icon: BarChart3 },
     { href: "/invoices", label: "Invoices", icon: Receipt },
     { href: "/reminders", label: "Reminders", icon: Bell },
     { href: "/expenses", label: "Expenses", icon: Wallet },
     { href: "/staff", label: "Staff", icon: UserCheck },
+    ...(userRole === "owner"
+      ? [
+          { href: "/staff/payroll", label: "Payroll", icon: Banknote },
+          { href: "/settings/branches", label: "Branches", icon: Building2 },
+        ]
+      : []),
     { href: "/settings", label: "Settings", icon: Settings },
   ];
 
