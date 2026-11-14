@@ -10,16 +10,24 @@ const PUBLIC_PATHS = [
   "/register",
   "/api/auth/login",
   "/api/auth/register",
+  "/api/portal",
+  "/api/invoices/public",
+  "/api/parq",
 ];
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  // Static assets and internal next paths
+
+  // Static assets, public customer self-service pages, and token-based public APIs
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon.ico") ||
     pathname.startsWith("/portal") ||
-    pathname.startsWith("/i/")
+    pathname.startsWith("/i/") ||
+    pathname.startsWith("/parq") ||
+    pathname.startsWith("/api/portal") ||
+    pathname.startsWith("/api/invoices/public") ||
+    pathname.startsWith("/api/parq")
   ) {
     return NextResponse.next();
   }
@@ -63,4 +71,3 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: ["/((?!.*\\..*|_next).*)"],
 };
-
