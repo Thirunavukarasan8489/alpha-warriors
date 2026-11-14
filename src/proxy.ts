@@ -14,7 +14,6 @@ const PUBLIC_PATHS = [
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-
   // Static assets and internal next paths
   if (
     pathname.startsWith("/_next") ||
