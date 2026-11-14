@@ -15,9 +15,11 @@ import {
   ChevronRight,
   ShieldAlert,
   UserCheck,
+  Loader2,
 } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
 import { useToast } from "@/components/Toast";
+import { SkeletonList } from "@/components/Skeleton";
 
 interface StaffMember {
   id: string;
@@ -34,6 +36,7 @@ export default function StaffListPage() {
   const { toast } = useToast();
   const [staff, setStaff] = useState<StaffMember[]>([]);
   const [loading, setLoading] = useState(true);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
   const loadStaff = async () => {
     setLoading(true);
@@ -55,11 +58,14 @@ export default function StaffListPage() {
   }, []);
 
   const handleToggleActive = async (member: StaffMember) => {
-    if (member.role === "owner") {
-      toast("The gym owner account cannot be deactivated.", "error");
+    if (member.role === "owner" || togglingId) {
+      if (member.role === "owner") {
+        toast("The gym owner account cannot be deactivated.", "error");
+      }
       return;
     }
 
+    setTogglingId(member.id);
     try {
       const res = await fetch(`/api/staff/${member.id}`, {
         method: "PATCH",
@@ -83,6 +89,8 @@ export default function StaffListPage() {
       );
     } catch (err: any) {
       toast(err.message || "Failed to update staff status", "error");
+    } finally {
+      setTogglingId(null);
     }
   };
 
@@ -111,11 +119,7 @@ export default function StaffListPage() {
 
       {/* Staff List */}
       {loading ? (
-        <div className="space-y-3">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-20 bg-white rounded-2xl animate-pulse" />
-          ))}
-        </div>
+        <SkeletonList count={3} />
       ) : staff.length === 0 ? (
         <EmptyState
           icon={<Users className="w-6 h-6 text-red-600" />}
@@ -236,8 +240,8 @@ export default function StaffListPage() {
                       <button
                         type="button"
                         onClick={() => handleToggleActive(u)}
-                        disabled={u.role === "owner"}
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold transition ${
+                        disabled={u.role === "owner" || togglingId === u.id}
+                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold transition disabled:opacity-50 touch-manipulation cursor-pointer ${
                           u.role === "owner"
                             ? "cursor-default bg-emerald-50 text-emerald-700"
                             : u.isActive
@@ -246,6 +250,9 @@ export default function StaffListPage() {
                         }`}
                         title={u.role === "owner" ? "Owner account cannot be modified" : "Click to toggle active status"}
                       >
+                        {togglingId === u.id ? (
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                        ) : null}
                         {u.isActive ? "Active" : "Deactivated"}
                       </button>
                     </td>

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Plus, Edit2, Trash2, Layers, Check, AlertCircle } from "lucide-react";
+import { Plus, Edit2, Trash2, Layers, Check, AlertCircle, Loader2 } from "lucide-react";
+import { SkeletonList } from "@/components/Skeleton";
 import { MoneyText } from "@/components/MoneyText";
 import { Modal } from "@/components/Modal";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
@@ -187,11 +188,7 @@ export default function PlansPage() {
 
       {/* Plans Grid */}
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-44 bg-white rounded-2xl animate-pulse" />
-          ))}
-        </div>
+        <SkeletonList count={3} />
       ) : plans.length === 0 ? (
         <div className="p-8 text-center bg-white rounded-2xl border border-gray-200 space-y-3">
           <Layers className="w-10 h-10 text-red-500 mx-auto" />
@@ -408,9 +405,16 @@ export default function PlansPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-xs transition"
+              className="inline-flex items-center justify-center gap-1.5 px-6 py-2.5 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-xs transition touch-manipulation cursor-pointer"
             >
-              {isSubmitting ? "Saving..." : editingPlan ? "Update Plan" : "Create Plan"}
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <span>{editingPlan ? "Update Plan" : "Create Plan"}</span>
+              )}
             </button>
           </div>
         </form>

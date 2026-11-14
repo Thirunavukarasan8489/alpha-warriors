@@ -11,7 +11,9 @@ import {
   DollarSign,
   PieChart,
   ShieldAlert,
+  Loader2,
 } from "lucide-react";
+import { SkeletonList, SkeletonTable } from "@/components/Skeleton";
 import { MoneyText } from "@/components/MoneyText";
 import { DateText } from "@/components/DateText";
 import { Modal } from "@/components/Modal";
@@ -276,10 +278,13 @@ export default function ExpensesPage() {
 
       {/* Expenses List */}
       {loading ? (
-        <div className="space-y-3">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-16 bg-white rounded-2xl animate-pulse" />
-          ))}
+        <div>
+          <div className="md:hidden">
+            <SkeletonList count={4} />
+          </div>
+          <div className="hidden md:block">
+            <SkeletonTable rows={4} cols={6} />
+          </div>
         </div>
       ) : expenses.length === 0 ? (
         <EmptyState
@@ -488,9 +493,16 @@ export default function ExpensesPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-xs transition"
+              className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-xs transition touch-manipulation cursor-pointer"
             >
-              {isSubmitting ? "Saving..." : editingExpense ? "Update Expense" : "Save Expense"}
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <span>{editingExpense ? "Update Expense" : "Save Expense"}</span>
+              )}
             </button>
           </div>
         </form>

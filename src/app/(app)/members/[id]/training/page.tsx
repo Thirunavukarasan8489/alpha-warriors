@@ -26,6 +26,7 @@ import {
 import { useToast } from "@/components/Toast";
 import { formatDate } from "@/lib/dates";
 import { buildShareLink } from "@/lib/whatsapp";
+import { SkeletonStats, SkeletonList } from "@/components/Skeleton";
 
 interface Exercise {
   name: string;
@@ -267,9 +268,9 @@ export default function MemberTrainingPage() {
 
   if (loading) {
     return (
-      <div className="p-12 text-center bg-white rounded-2xl border border-gray-200">
-        <Loader2 className="w-8 h-8 animate-spin text-red-600 mx-auto mb-2" />
-        <p className="text-sm font-semibold text-gray-500">Loading training dashboard...</p>
+      <div className="space-y-6">
+        <SkeletonStats count={4} />
+        <SkeletonList count={3} />
       </div>
     );
   }
@@ -457,10 +458,19 @@ export default function MemberTrainingPage() {
                 <button
                   onClick={handleSaveWorkout}
                   disabled={isSavingWorkout}
-                  className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs flex items-center gap-1.5 transition disabled:opacity-50"
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-xs transition touch-manipulation cursor-pointer"
                 >
-                  <Save className="w-3.5 h-3.5" />
-                  {isSavingWorkout ? "Saving..." : "Save Routine"}
+                  {isSavingWorkout ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-3.5 h-3.5" />
+                      <span>Save Routine</span>
+                    </>
+                  )}
                 </button>
               )}
             </div>
@@ -610,10 +620,19 @@ export default function MemberTrainingPage() {
                 <button
                   onClick={handleSaveDiet}
                   disabled={isSavingDiet}
-                  className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs flex items-center gap-1.5 transition disabled:opacity-50"
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-xs transition touch-manipulation cursor-pointer"
                 >
-                  <Save className="w-3.5 h-3.5" />
-                  {isSavingDiet ? "Saving..." : "Save Nutrition"}
+                  {isSavingDiet ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-3.5 h-3.5" />
+                      <span>Save Nutrition</span>
+                    </>
+                  )}
                 </button>
               )}
             </div>
@@ -761,10 +780,19 @@ export default function MemberTrainingPage() {
             <button
               onClick={handleCreateParqLink}
               disabled={isGeneratingParq}
-              className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-xs flex items-center gap-2 transition disabled:opacity-50 shrink-0"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-black disabled:opacity-50 text-white font-bold text-xs transition touch-manipulation cursor-pointer shrink-0"
             >
-              <Share2 className="w-3.5 h-3.5" />
-              {isGeneratingParq ? "Generating..." : "Share PAR-Q Link via WhatsApp"}
+              {isGeneratingParq ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Generating...</span>
+                </>
+              ) : (
+                <>
+                  <Share2 className="w-3.5 h-3.5" />
+                  <span>Share PAR-Q Link via WhatsApp</span>
+                </>
+              )}
             </button>
           </div>
 
@@ -880,9 +908,16 @@ export default function MemberTrainingPage() {
                 <button
                   type="submit"
                   disabled={isLoggingSession}
-                  className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold disabled:opacity-50"
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold transition touch-manipulation cursor-pointer"
                 >
-                  {isLoggingSession ? "Logging..." : "Confirm Session"}
+                  {isLoggingSession ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Logging...</span>
+                    </>
+                  ) : (
+                    <span>Confirm Session</span>
+                  )}
                 </button>
               </div>
             </form>

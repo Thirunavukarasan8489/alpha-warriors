@@ -21,6 +21,7 @@ import {
 import { useToast } from "@/components/Toast";
 import { formatPaise, rupeesToPaise } from "@/lib/money";
 import { buildShareLink } from "@/lib/whatsapp";
+import { SkeletonTable, SkeletonStats } from "@/components/Skeleton";
 
 interface PayrollItem {
   id: string;
@@ -233,10 +234,7 @@ export default function StaffPayrollPage() {
 
       {/* Main Payroll Table */}
       {loading ? (
-        <div className="p-12 text-center bg-white rounded-2xl border border-gray-200">
-          <Loader2 className="w-8 h-8 animate-spin text-red-600 mx-auto mb-2" />
-          <p className="text-sm font-semibold text-gray-500">Calculating monthly payroll...</p>
-        </div>
+        <SkeletonTable rows={5} cols={8} />
       ) : payrollItems.length === 0 ? (
         <div className="p-12 text-center bg-white rounded-2xl border border-gray-200">
           <Banknote className="w-12 h-12 text-gray-300 mx-auto mb-2" />
@@ -327,9 +325,16 @@ export default function StaffPayrollPage() {
                           <button
                             onClick={() => handleMarkPaid(item)}
                             disabled={payingId === item.id}
-                            className="px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-2xs transition disabled:opacity-50"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-2xs transition disabled:opacity-50 touch-manipulation cursor-pointer"
                           >
-                            {payingId === item.id ? "Paying..." : "Pay"}
+                            {payingId === item.id ? (
+                              <>
+                                <Loader2 className="w-3 h-3 animate-spin" />
+                                <span>Paying...</span>
+                              </>
+                            ) : (
+                              <span>Pay</span>
+                            )}
                           </button>
                         </>
                       )}
@@ -416,9 +421,16 @@ export default function StaffPayrollPage() {
                 <button
                   type="submit"
                   disabled={isSavingEdit}
-                  className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold disabled:opacity-50"
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold transition touch-manipulation cursor-pointer"
                 >
-                  {isSavingEdit ? "Saving..." : "Update Draft"}
+                  {isSavingEdit ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <span>Update Draft</span>
+                  )}
                 </button>
               </div>
             </form>

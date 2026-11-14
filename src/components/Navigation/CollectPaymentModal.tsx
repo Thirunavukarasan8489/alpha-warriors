@@ -10,7 +10,7 @@ import { formatPaise, rupeesToPaise } from "@/lib/money";
 import { formatDate } from "@/lib/dates";
 import { WhatsAppTemplates } from "@/lib/whatsapp";
 import { useToast } from "@/components/Toast";
-import { CheckCircle2, Receipt, ArrowRight } from "lucide-react";
+import { CheckCircle2, Receipt, ArrowRight, Loader2 } from "lucide-react";
 
 interface MemberOption {
   id: string;
@@ -420,9 +420,16 @@ export function CollectPaymentModal({
                 <button
                   type="submit"
                   disabled={isSubmitting || amountPaise <= 0}
-                  className="px-6 py-2.5 bg-red-600 hover:bg-red-700 disabled:bg-red-300 text-white text-sm font-bold rounded-xl shadow-sm transition"
+                  className="inline-flex items-center justify-center gap-1.5 px-6 py-2.5 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white text-sm font-bold rounded-xl shadow-sm transition touch-manipulation cursor-pointer"
                 >
-                  {isSubmitting ? "Recording..." : `Collect ${formatPaise(amountPaise)}`}
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Recording...</span>
+                    </>
+                  ) : (
+                    <span>Collect {formatPaise(amountPaise)}</span>
+                  )}
                 </button>
               </div>
             </>

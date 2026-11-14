@@ -24,7 +24,9 @@ import {
   CheckCircle2,
   Dumbbell,
   Globe,
+  Loader2,
 } from "lucide-react";
+import { SkeletonStats, SkeletonList } from "@/components/Skeleton";
 import { StatusBadge } from "@/components/StatusBadge";
 import { MoneyText } from "@/components/MoneyText";
 import { DateText } from "@/components/DateText";
@@ -315,8 +317,8 @@ export default function MemberProfilePage() {
   if (loading || !member) {
     return (
       <div className="space-y-6">
-        <div className="h-44 bg-white rounded-3xl animate-pulse" />
-        <div className="h-64 bg-white rounded-3xl animate-pulse" />
+        <SkeletonStats count={4} />
+        <SkeletonList count={3} />
       </div>
     );
   }
@@ -835,9 +837,16 @@ export default function MemberProfilePage() {
             <button
               type="submit"
               disabled={actionLoading || !selectedPlan}
-              className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-xs transition"
+              className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-xs transition touch-manipulation cursor-pointer"
             >
-              {actionLoading ? "Processing..." : "Confirm Renewal"}
+              {actionLoading ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Processing...</span>
+                </>
+              ) : (
+                <span>Confirm Renewal</span>
+              )}
             </button>
           </div>
         </form>
@@ -875,9 +884,16 @@ export default function MemberProfilePage() {
             <button
               type="submit"
               disabled={actionLoading}
-              className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs"
+              className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-xs transition touch-manipulation cursor-pointer"
             >
-              {actionLoading ? "Saving..." : "Freeze Now"}
+              {actionLoading ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Freezing...</span>
+                </>
+              ) : (
+                <span>Freeze Now</span>
+              )}
             </button>
           </div>
         </form>
@@ -940,9 +956,16 @@ export default function MemberProfilePage() {
             <button
               type="submit"
               disabled={actionLoading}
-              className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-xs transition"
+              className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-xs transition touch-manipulation cursor-pointer"
             >
-              {actionLoading ? "Extending..." : "Confirm Extension"}
+              {actionLoading ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Extending...</span>
+                </>
+              ) : (
+                <span>Confirm Extension</span>
+              )}
             </button>
           </div>
         </form>
@@ -971,9 +994,16 @@ export default function MemberProfilePage() {
             <button
               type="submit"
               disabled={actionLoading || !modalInput.newPlanId}
-              className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-xs transition"
+              className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-xs transition touch-manipulation cursor-pointer"
             >
-              {actionLoading ? "Upgrading..." : "Confirm Upgrade"}
+              {actionLoading ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Upgrading...</span>
+                </>
+              ) : (
+                <span>Confirm Upgrade</span>
+              )}
             </button>
           </div>
         </form>
@@ -1011,9 +1041,16 @@ export default function MemberProfilePage() {
             <button
               type="submit"
               disabled={actionLoading}
-              className="px-5 py-2 bg-rose-600 text-white font-bold text-xs rounded-xl"
+              className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-xs transition touch-manipulation cursor-pointer"
             >
-              {actionLoading ? "Terminating..." : "Confirm Termination"}
+              {actionLoading ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Terminating...</span>
+                </>
+              ) : (
+                <span>Confirm Termination</span>
+              )}
             </button>
           </div>
         </form>

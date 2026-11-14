@@ -12,7 +12,9 @@ import {
   Ban,
   ArrowRight,
   Filter,
+  Loader2,
 } from "lucide-react";
+import { SkeletonList } from "@/components/Skeleton";
 import { MoneyText } from "@/components/MoneyText";
 import { DateText } from "@/components/DateText";
 import { ShareButton } from "@/components/ShareButton";
@@ -295,7 +297,9 @@ function PaymentsContent() {
             </div>
 
             {loadingPayments ? (
-              <div className="p-8 text-center text-xs text-gray-400">Loading payments...</div>
+              <div className="p-4">
+                <SkeletonList count={4} />
+              </div>
             ) : payments.length === 0 ? (
               <EmptyState
                 icon={<Wallet className="w-6 h-6" />}
@@ -428,7 +432,9 @@ function PaymentsContent() {
             </div>
 
             {loadingDues ? (
-              <div className="p-8 text-center text-xs text-gray-400">Loading dues...</div>
+              <div className="p-4">
+                <SkeletonList count={4} />
+              </div>
             ) : duesData.rows.length === 0 ? (
               <EmptyState
                 icon={<CreditCard className="w-6 h-6 text-emerald-500" />}
@@ -562,9 +568,16 @@ function PaymentsContent() {
               <button
                 type="submit"
                 disabled={isVoiding || !voidReason.trim()}
-                className="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-xs"
+                className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-xs transition touch-manipulation cursor-pointer"
               >
-                {isVoiding ? "Voiding..." : "Confirm Void"}
+                {isVoiding ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Voiding...</span>
+                  </>
+                ) : (
+                  <span>Confirm Void</span>
+                )}
               </button>
             </div>
           </form>
@@ -576,7 +589,7 @@ function PaymentsContent() {
 
 export default function PaymentsPage() {
   return (
-    <Suspense fallback={<div className="h-64 bg-white rounded-2xl animate-pulse" />}>
+    <Suspense fallback={<SkeletonList count={4} />}>
       <PaymentsContent />
     </Suspense>
   );

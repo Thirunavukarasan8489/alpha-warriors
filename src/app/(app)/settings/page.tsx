@@ -15,9 +15,11 @@ import {
   Save,
   HelpCircle,
   FileSpreadsheet,
+  Loader2,
 } from "lucide-react";
 import { Modal } from "@/components/Modal";
 import { useToast } from "@/components/Toast";
+import { SkeletonList, SkeletonStats } from "@/components/Skeleton";
 
 interface GymSettingsData {
   id: string;
@@ -298,7 +300,12 @@ export default function SettingsPage() {
   };
 
   if (loading) {
-    return <div className="h-96 bg-white rounded-2xl animate-pulse" />;
+    return (
+      <div className="max-w-4xl mx-auto space-y-6">
+        <SkeletonStats count={2} />
+        <SkeletonList count={2} />
+      </div>
+    );
   }
 
   return (
@@ -437,10 +444,19 @@ export default function SettingsPage() {
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-1.5 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-xs transition"
+              className="inline-flex items-center justify-center gap-1.5 px-6 py-2.5 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-xs transition touch-manipulation cursor-pointer"
             >
-              <Save className="w-3.5 h-3.5" />
-              <span>{saving ? "Saving..." : "Save Gym Profile"}</span>
+              {saving ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="w-3.5 h-3.5" />
+                  <span>Save Gym Profile</span>
+                </>
+              )}
             </button>
           </div>
         </form>
@@ -555,10 +571,19 @@ export default function SettingsPage() {
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-1.5 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-xs transition"
+              className="inline-flex items-center justify-center gap-1.5 px-6 py-2.5 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-xs transition touch-manipulation cursor-pointer"
             >
-              <Save className="w-3.5 h-3.5" />
-              <span>{saving ? "Saving..." : "Save Billing Settings"}</span>
+              {saving ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="w-3.5 h-3.5" />
+                  <span>Save Billing Settings</span>
+                </>
+              )}
             </button>
           </div>
         </form>
@@ -633,10 +658,19 @@ export default function SettingsPage() {
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-1.5 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-xs transition"
+              className="inline-flex items-center justify-center gap-1.5 px-6 py-2.5 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-xs transition touch-manipulation cursor-pointer"
             >
-              <Save className="w-3.5 h-3.5" />
-              <span>{saving ? "Saving..." : "Update Templates"}</span>
+              {saving ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="w-3.5 h-3.5" />
+                  <span>Update Templates</span>
+                </>
+              )}
             </button>
           </div>
         </form>
@@ -749,9 +783,16 @@ export default function SettingsPage() {
                     type="button"
                     onClick={handleCommitImport}
                     disabled={importing || previewResult.validCount === 0}
-                    className="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition"
+                    className="inline-flex items-center justify-center gap-1.5 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-xs transition touch-manipulation cursor-pointer"
                   >
-                    {importing ? "Importing..." : `Confirm Import (${previewResult.validCount} Members)`}
+                    {importing ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Importing...</span>
+                      </>
+                    ) : (
+                      <span>Confirm Import ({previewResult.validCount} Members)</span>
+                    )}
                   </button>
                 </div>
               </div>
@@ -822,9 +863,16 @@ export default function SettingsPage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-xs transition"
+                className="inline-flex items-center justify-center gap-1.5 px-6 py-2.5 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-xs transition touch-manipulation cursor-pointer"
               >
-                {saving ? "Updating..." : "Update Password"}
+                {saving ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Updating...</span>
+                  </>
+                ) : (
+                  <span>Update Password</span>
+                )}
               </button>
             </div>
           </form>

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Lock, User, Phone, Mail, Building, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, Lock, User, Phone, Mail, Building, AlertCircle, Loader2 } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -179,9 +179,16 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-red-600 hover:bg-red-700 active:bg-red-800 disabled:bg-red-300 text-white font-black text-sm rounded-xl shadow-lg shadow-red-600/30 transition transform active:scale-98 tracking-wide uppercase"
+              className="w-full py-3 bg-red-600 hover:bg-red-700 active:bg-red-800 disabled:opacity-50 text-white font-black text-sm rounded-xl shadow-lg shadow-red-600/30 transition transform active:scale-98 tracking-wide uppercase inline-flex items-center justify-center gap-2 touch-manipulation cursor-pointer"
             >
-              {loading ? "Creating Account..." : "Create Gym Account"}
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Creating Account...</span>
+                </>
+              ) : (
+                <span>Create Gym Account</span>
+              )}
             </button>
           </div>
         </form>

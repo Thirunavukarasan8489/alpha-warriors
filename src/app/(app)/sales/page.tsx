@@ -30,6 +30,7 @@ import { PaymentSplitRows, SplitModeRow } from "@/components/PaymentSplitRows";
 import { formatPaise, rupeesToPaise } from "@/lib/money";
 import { formatDate } from "@/lib/dates";
 import { buildShareLink } from "@/lib/whatsapp";
+import { SkeletonList, SkeletonTable } from "@/components/Skeleton";
 
 interface ProductItem {
   id: string;
@@ -540,10 +541,7 @@ export default function SalesPage() {
             </div>
 
             {loadingProducts ? (
-              <div className="p-12 text-center bg-white rounded-2xl border border-gray-200">
-                <Loader2 className="w-8 h-8 animate-spin text-red-600 mx-auto mb-2" />
-                <p className="text-xs text-gray-500">Loading catalog...</p>
-              </div>
+              <SkeletonList count={6} />
             ) : products.length === 0 ? (
               <div className="p-12 text-center bg-white rounded-2xl border border-gray-200">
                 <Package className="w-10 h-10 text-gray-300 mx-auto mb-2" />
@@ -850,10 +848,7 @@ export default function SalesPage() {
           </div>
 
           {loadingSales ? (
-            <div className="p-12 text-center bg-white rounded-2xl border border-gray-200">
-              <Loader2 className="w-8 h-8 animate-spin text-red-600 mx-auto mb-2" />
-              <p className="text-xs text-gray-500">Loading sales records...</p>
-            </div>
+            <SkeletonTable rows={5} cols={7} />
           ) : sales.length === 0 ? (
             <div className="p-12 text-center bg-white rounded-2xl border border-gray-200">
               <History className="w-10 h-10 text-gray-300 mx-auto mb-2" />
@@ -1196,9 +1191,16 @@ export default function SalesPage() {
                   type="button"
                   onClick={handleVoidSale}
                   disabled={isVoiding}
-                  className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold disabled:opacity-50"
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-white font-bold transition touch-manipulation cursor-pointer"
                 >
-                  {isVoiding ? "Voiding..." : "Confirm Void"}
+                  {isVoiding ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Voiding...</span>
+                    </>
+                  ) : (
+                    <span>Confirm Void</span>
+                  )}
                 </button>
               </div>
             </div>
@@ -1265,9 +1267,16 @@ export default function SalesPage() {
                 <button
                   type="submit"
                   disabled={isAdjustingStock}
-                  className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold disabled:opacity-50"
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold transition touch-manipulation cursor-pointer"
                 >
-                  {isAdjustingStock ? "Saving..." : "Save Adjustment"}
+                  {isAdjustingStock ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <span>Save Adjustment</span>
+                  )}
                 </button>
               </div>
             </form>
@@ -1397,9 +1406,16 @@ export default function SalesPage() {
                 <button
                   type="submit"
                   disabled={isSavingProduct}
-                  className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold disabled:opacity-50"
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold transition touch-manipulation cursor-pointer"
                 >
-                  {isSavingProduct ? "Saving..." : editingProduct ? "Update Product" : "Create Product"}
+                  {isSavingProduct ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <span>{editingProduct ? "Update Product" : "Create Product"}</span>
+                  )}
                 </button>
               </div>
             </form>

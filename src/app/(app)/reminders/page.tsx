@@ -25,6 +25,7 @@ import { CollectPaymentModal } from "@/components/Navigation/CollectPaymentModal
 import { useToast } from "@/components/Toast";
 import { WhatsAppTemplates } from "@/lib/whatsapp";
 import { formatPaise } from "@/lib/money";
+import { SkeletonList } from "@/components/Skeleton";
 
 interface ReminderItem {
   id: string;
@@ -288,11 +289,7 @@ export default function RemindersPage() {
 
       {/* Reminders List */}
       {loading ? (
-        <div className="space-y-3">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-20 bg-white rounded-2xl animate-pulse" />
-          ))}
-        </div>
+        <SkeletonList count={4} />
       ) : displayedItems.length === 0 ? (
         <EmptyState
           icon={<CheckCircle2 className="w-6 h-6 text-emerald-600" />}

@@ -16,6 +16,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useToast } from "@/components/Toast";
+import { SkeletonList } from "@/components/Skeleton";
 
 interface Branch {
   id: string;
@@ -210,10 +211,7 @@ export default function BranchesPage() {
 
       {/* Branches List */}
       {isLoading ? (
-        <div className="p-12 text-center bg-white rounded-2xl border border-gray-200">
-          <Loader2 className="w-8 h-8 animate-spin text-red-600 mx-auto mb-2" />
-          <p className="text-sm font-semibold text-gray-500">Loading branch locations...</p>
-        </div>
+        <SkeletonList count={3} />
       ) : branches.length === 0 ? (
         <div className="p-12 text-center bg-white rounded-2xl border border-gray-200">
           <Building2 className="w-12 h-12 text-gray-400 mx-auto mb-3" />
@@ -397,9 +395,16 @@ export default function BranchesPage() {
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-md shadow-red-900/20 disabled:opacity-50"
+                  className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-xs shadow-md shadow-red-900/20 transition touch-manipulation cursor-pointer"
                 >
-                  {isSaving ? "Saving..." : editingBranch ? "Update Branch" : "Create Branch"}
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <span>{editingBranch ? "Update Branch" : "Create Branch"}</span>
+                  )}
                 </button>
               </div>
             </form>

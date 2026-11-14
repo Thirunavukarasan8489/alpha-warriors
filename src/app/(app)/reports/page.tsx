@@ -20,6 +20,7 @@ import { DateText } from "@/components/DateText";
 import { formatPaise } from "@/lib/money";
 import { toInputDateString, addDays } from "@/lib/dates";
 import { useToast } from "@/components/Toast";
+import { SkeletonTable } from "@/components/Skeleton";
 
 interface ReportMeta {
   id: string;
@@ -230,7 +231,9 @@ export default function ReportsPage() {
             </div>
 
             {loading ? (
-              <div className="p-12 text-center text-xs text-gray-400">Loading report data...</div>
+              <div className="p-4">
+                <SkeletonTable rows={6} cols={6} />
+              </div>
             ) : !reportData || !reportData.rows || reportData.rows.length === 0 ? (
               <div className="p-12 text-center text-xs text-gray-400">
                 No records found for the selected date range.

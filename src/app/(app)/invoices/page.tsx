@@ -19,6 +19,7 @@ import { MoneyText } from "@/components/MoneyText";
 import { DateText } from "@/components/DateText";
 import { EmptyState } from "@/components/EmptyState";
 import { formatPaise } from "@/lib/money";
+import { SkeletonList } from "@/components/Skeleton";
 
 interface InvoiceItem {
   id: string;
@@ -161,11 +162,7 @@ export default function InvoicesPage() {
 
       {/* Invoice List */}
       {loading ? (
-        <div className="space-y-3">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-20 bg-white rounded-2xl animate-pulse" />
-          ))}
-        </div>
+        <SkeletonList count={4} />
       ) : invoices.length === 0 ? (
         <EmptyState
           icon={<Receipt className="w-6 h-6 text-red-600" />}

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, User, Phone, Mail, MapPin, Calendar, Check, AlertCircle } from "lucide-react";
+import { ArrowLeft, User, Phone, Mail, MapPin, Calendar, Check, AlertCircle, Loader2 } from "lucide-react";
 import { PhotoUploader } from "@/components/PhotoUploader";
 import { PlanPicker, PlanOption } from "@/components/PlanPicker";
 import { PaymentSplitRows, SplitModeRow } from "@/components/PaymentSplitRows";
@@ -416,10 +416,10 @@ function NewMemberForm() {
         )}
 
         {/* Sticky Action Footer on Mobile & Desktop */}
-        <div className="sticky bottom-16 md:bottom-4 bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-gray-200 shadow-lg flex items-center justify-between gap-4">
+        <div className="sticky bottom-20 md:bottom-4 bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-gray-200 shadow-lg flex items-center justify-between gap-4 z-30">
           <Link
             href="/members"
-            className="px-4 py-2.5 text-xs font-semibold text-gray-600 hover:text-gray-900"
+            className="px-4 py-2.5 text-xs font-semibold text-gray-600 hover:text-gray-900 cursor-pointer"
           >
             Cancel
           </Link>
@@ -427,9 +427,16 @@ function NewMemberForm() {
           <button
             type="submit"
             disabled={loading || !selectedPlan}
-            className="px-8 py-3 bg-red-600 hover:bg-red-700 disabled:bg-red-300 text-white font-bold text-sm rounded-xl shadow-md shadow-red-600/20 transition"
+            className="px-8 py-3 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-sm rounded-xl shadow-md shadow-red-600/20 transition flex items-center justify-center gap-2 cursor-pointer active:scale-95 touch-manipulation"
           >
-            {loading ? "Registering..." : "Save & Create Member"}
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Registering Member...</span>
+              </>
+            ) : (
+              <span>Save & Create Member</span>
+            )}
           </button>
         </div>
       </form>

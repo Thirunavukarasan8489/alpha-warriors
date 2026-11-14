@@ -13,7 +13,9 @@ import {
   Clock,
   UserX,
   Camera,
+  Loader2,
 } from "lucide-react";
+import { SkeletonList } from "@/components/Skeleton";
 import { SearchBox } from "@/components/SearchBox";
 import { StatusBadge } from "@/components/StatusBadge";
 import { DateText } from "@/components/DateText";
@@ -65,6 +67,8 @@ export default function AttendancePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [checkingInId, setCheckingInId] = useState<string | null>(null);
+  const [undoingId, setUndoingId] = useState<string | null>(null);
+  const [isQrSubmitting, setIsQrSubmitting] = useState(false);
 
   // Duplicate Check-in confirmation
   const [duplicateWarning, setDuplicateWarning] = useState<{
@@ -181,6 +185,8 @@ export default function AttendancePage() {
   };
 
   const handleUndo = async (recordId: string) => {
+    if (undoingId) return;
+    setUndoingId(recordId);
     try {
       const res = await fetch(`/api/attendance/${recordId}`, { method: "DELETE" });
       const json = await res.json();
@@ -191,22 +197,29 @@ export default function AttendancePage() {
       loadTodayAttendance();
     } catch (err: unknown) {
       toast((err as Error).message || "Error", "error");
+    } finally {
+      setUndoingId(null);
     }
   };
 
-  const handleQrManualSubmit = (e: React.FormEvent) => {
+  const handleQrManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!qrInputCode.trim()) return;
+    if (!qrInputCode.trim() || isQrSubmitting) return;
 
-    fetch(`/api/members?search=${encodeURIComponent(qrInputCode)}&limit=1`)
-      .then((res) => res.json())
-      .then((json) => {
-        if (json.data && json.data.length > 0) {
-          handleCheckIn(json.data[0].id, false);
-        } else {
-          toast("No member found with this code", "error");
-        }
-      });
+    setIsQrSubmitting(true);
+    try {
+      const res = await fetch(`/api/members?search=${encodeURIComponent(qrInputCode)}&limit=1`);
+      const json = await res.json();
+      if (json.data && json.data.length > 0) {
+        await handleCheckIn(json.data[0].id, false);
+      } else {
+        toast("No member found with this code", "error");
+      }
+    } catch {
+      toast("Error searching for member code", "error");
+    } finally {
+      setIsQrSubmitting(false);
+    }
   };
 
   return (
@@ -300,9 +313,16 @@ export default function AttendancePage() {
                         type="button"
                         onClick={() => handleCheckIn(m.id)}
                         disabled={checkingInId === m.id}
-                        className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white font-bold rounded-xl shadow-xs transition"
+                        className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold rounded-xl shadow-xs transition touch-manipulation cursor-pointer"
                       >
-                        {checkingInId === m.id ? "Checking in..." : "Check in"}
+                        {checkingInId === m.id ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            <span>Checking in...</span>
+                          </>
+                        ) : (
+                          <span>Check in</span>
+                        )}
                       </button>
                     </div>
                   </div>
@@ -321,7 +341,9 @@ export default function AttendancePage() {
             </div>
 
             {loadingRecords ? (
-              <div className="p-8 text-center text-xs text-gray-400">Loading attendance log...</div>
+              <div className="p-4">
+                <SkeletonList count={4} />
+              </div>
             ) : attendanceRecords.length === 0 ? (
               <EmptyState
                 icon={<CalendarCheck className="w-6 h-6" />}
@@ -370,10 +392,15 @@ export default function AttendancePage() {
                       <button
                         type="button"
                         onClick={() => handleUndo(rec.id)}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold text-rose-600 hover:bg-rose-50 rounded-lg border border-rose-200 transition"
+                        disabled={undoingId === rec.id}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold text-rose-600 hover:bg-rose-50 disabled:opacity-50 rounded-lg border border-rose-200 transition touch-manipulation cursor-pointer"
                         title="Undo Check-in"
                       >
-                        <Undo2 className="w-3 h-3" />
+                        {undoingId === rec.id ? (
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                        ) : (
+                          <Undo2 className="w-3 h-3" />
+                        )}
                         Undo
                       </button>
                     </div>
@@ -399,7 +426,9 @@ export default function AttendancePage() {
           </div>
 
           {loadingAbsent ? (
-            <div className="p-8 text-center text-xs text-gray-400">Loading missed workouts...</div>
+            <div className="p-4">
+              <SkeletonList count={4} />
+            </div>
           ) : absentMembers.length === 0 ? (
             <EmptyState
               icon={<CheckCircle2 className="w-6 h-6 text-emerald-500" />}
@@ -507,9 +536,17 @@ export default function AttendancePage() {
               />
               <button
                 type="submit"
-                className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-xs transition"
+                disabled={isQrSubmitting || !qrInputCode.trim()}
+                className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-xs transition touch-manipulation cursor-pointer"
               >
-                Check In
+                {isQrSubmitting ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Checking...</span>
+                  </>
+                ) : (
+                  <span>Check In</span>
+                )}
               </button>
             </div>
           </form>

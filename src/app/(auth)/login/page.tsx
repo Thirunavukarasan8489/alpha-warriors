@@ -3,7 +3,7 @@
 import React, { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Eye, EyeOff, Lock, User, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, Lock, User, AlertCircle, Loader2 } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
@@ -124,9 +124,16 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-red-600 hover:bg-red-700 active:bg-red-800 disabled:bg-red-300 text-white font-black text-sm rounded-xl shadow-lg shadow-red-600/30 transition transform active:scale-98 tracking-wide uppercase"
+              className="w-full py-3 bg-red-600 hover:bg-red-700 active:bg-red-800 disabled:opacity-50 text-white font-black text-sm rounded-xl shadow-lg shadow-red-600/30 transition transform active:scale-98 tracking-wide uppercase inline-flex items-center justify-center gap-2 touch-manipulation cursor-pointer"
             >
-              {loading ? "Signing in..." : "Sign in to Dashboard"}
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Signing in...</span>
+                </>
+              ) : (
+                <span>Sign in to Dashboard</span>
+              )}
             </button>
           </div>
         </form>

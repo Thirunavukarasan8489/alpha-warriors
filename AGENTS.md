@@ -261,3 +261,9 @@ Indexes on day one: `members(gymId, phone)` unique, `members(gymId, name)`, `mem
    - Secret-free public URLs: verified receipts `/i/[token]`, member self-service portal `/portal/[token]`, and PAR-Q questionnaire `/parq/[token]` use unguessable SHA-256 tokens.
    - Manual WhatsApp links only (`wa.me`); no automatic SMS or messaging bots.
    - Verified with Next.js 16 production build (`next build --webpack` with 0 errors across all 49 pages and API endpoints).
+
+4. **UI Ergonomics, Toast & Loading UX Conventions**:
+   - **React Hot Toast**: Unified via `src/components/Toast.tsx` with customized dark obsidian and crimson accents, providing both `useToast()` hook (`toast` and `showToast`) and direct export.
+   - **Skeleton Loaders**: Standardized skeleton components in `src/components/Skeleton.tsx` (`Skeleton`, `SkeletonStats`, `SkeletonList`, `SkeletonTable`) used across all pages during data fetching and CRUD operations.
+   - **Multi-Click Prevention**: All action, modal, and API submission buttons disable when active (`disabled={loading || isSubmitting}`) and display an animated spinner (`<Loader2 className="w-3.5 h-3.5 animate-spin" />`) with user feedback text.
+   - **Mobile Touch Usability**: Form submit buttons feature full-width mobile layouts (`w-full sm:w-auto`), `touch-manipulation`, proper z-index elevation, and clearance padding (`pb-20`) above bottom navigation. The `FloatingActionButton` overlay employs `pointer-events-none` on outer containers and automatically suppresses itself on form and creation routes (`/staff/new`, `/members/new`, edit/training pages) to prevent capturing touch events.

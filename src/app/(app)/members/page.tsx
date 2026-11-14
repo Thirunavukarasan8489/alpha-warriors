@@ -14,6 +14,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { Modal } from "@/components/Modal";
 import { PlanPicker, PlanOption } from "@/components/PlanPicker";
 import { useToast } from "@/components/Toast";
+import { SkeletonList } from "@/components/Skeleton";
 import {
   UserPlus,
   Users,
@@ -21,6 +22,7 @@ import {
   RefreshCw,
   ArrowUpDown,
   PhoneCall,
+  Loader2,
 } from "lucide-react";
 
 function MembersListContent() {
@@ -180,11 +182,7 @@ function MembersListContent() {
 
       {/* Content: Cards on Mobile, Table on Desktop (>900px) */}
       {loading && members.length === 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-36 bg-white rounded-2xl border border-gray-100 p-4 animate-pulse shadow-xs" />
-          ))}
-        </div>
+        <SkeletonList count={6} />
       ) : members.length === 0 ? (
         <EmptyState
           icon={<Users className="w-6 h-6" />}
@@ -368,9 +366,16 @@ function MembersListContent() {
               <button
                 type="submit"
                 disabled={isRenewing || !selectedPlan}
-                className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl shadow-xs transition"
+                className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white text-xs font-bold rounded-xl shadow-xs transition touch-manipulation cursor-pointer"
               >
-                {isRenewing ? "Renewing..." : "Confirm Renewal"}
+                {isRenewing ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Renewing...</span>
+                  </>
+                ) : (
+                  <span>Confirm Renewal</span>
+                )}
               </button>
             </div>
           </form>
@@ -382,7 +387,7 @@ function MembersListContent() {
 
 export default function MembersListPage() {
   return (
-    <Suspense fallback={<div className="h-64 bg-white rounded-2xl animate-pulse" />}>
+    <Suspense fallback={<SkeletonList count={6} />}>
       <MembersListContent />
     </Suspense>
   );

@@ -19,6 +19,7 @@ import {
 import { MoneyText } from "@/components/MoneyText";
 import { DateText } from "@/components/DateText";
 import { formatPaise } from "@/lib/money";
+import { SkeletonStats, SkeletonList } from "@/components/Skeleton";
 
 interface DashboardData {
   gymName: string;
@@ -92,15 +93,10 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 w-48 bg-gray-200 rounded-xl animate-pulse" />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-28 bg-white rounded-2xl border border-gray-100 p-4 animate-pulse shadow-xs" />
-          ))}
-        </div>
+        <SkeletonStats count={4} />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="h-64 bg-white rounded-2xl border border-gray-100 p-4 animate-pulse" />
-          <div className="h-64 bg-white rounded-2xl border border-gray-100 p-4 animate-pulse" />
+          <SkeletonList count={2} />
+          <SkeletonList count={2} />
         </div>
       </div>
     );

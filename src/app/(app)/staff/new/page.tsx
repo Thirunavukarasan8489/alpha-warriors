@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   Copy,
   Send,
+  Loader2,
 } from "lucide-react";
 import { Modal } from "@/components/Modal";
 import { useToast } from "@/components/Toast";
@@ -84,7 +85,7 @@ Please sign in at ${window.location.origin}/login and change your password in Se
   };
 
   return (
-    <div className="max-w-xl mx-auto space-y-6">
+    <div className="max-w-xl mx-auto space-y-6 pb-20">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Link
@@ -162,19 +163,26 @@ Please sign in at ${window.location.origin}/login and change your password in Se
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3">
+        <div className="pt-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 relative z-10">
           <Link
             href="/staff"
-            className="px-4 py-2 text-xs font-semibold text-gray-600 hover:text-gray-900"
+            className="w-full sm:w-auto px-5 py-3 text-center text-xs font-bold text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-xl transition cursor-pointer"
           >
             Cancel
           </Link>
           <button
             type="submit"
             disabled={submitting}
-            className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-xs transition"
+            className="w-full sm:w-auto px-8 py-3 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-sm rounded-xl shadow-md shadow-red-900/20 transition flex items-center justify-center gap-2 active:scale-95 cursor-pointer touch-manipulation"
           >
-            {submitting ? "Creating Account..." : "Create Staff Account"}
+            {submitting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Creating Account...</span>
+              </>
+            ) : (
+              <span>Create Staff Account</span>
+            )}
           </button>
         </div>
       </form>
