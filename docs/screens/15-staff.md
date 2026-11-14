@@ -33,5 +33,5 @@ Defined in `AGENTS.md` and enforced by `lib/rbac.ts`. This screen only assigns t
 - **To:** `21-payroll.md` (salary details), `20-branches.md` (branch list for assignment).
 
 ## Done when
-- [ ] A deactivated user is signed out on their next request.
-- [ ] Role changes are reflected in the API checks, not just in the menu.
+- [x] A deactivated user is signed out on their next request.
+- [x] Role changes are reflected in the API checks, not just in the menu.

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { requireAuth } from "@/lib/rbac";
-import { Invoice } from "@/models";
+import { Invoice, Member } from "@/models";
 
 export async function GET(req: NextRequest) {
   const authResult = await requireAuth();
@@ -17,6 +17,10 @@ export async function GET(req: NextRequest) {
     await connectDB();
 
     const searchParams = req.nextUrl.searchParams;
+    const search = searchParams.get("search")?.trim();
+    const status = searchParams.get("status");
+    const from = searchParams.get("from");
+    const to = searchParams.get("to");
     const memberId = searchParams.get("memberId");
     const unpaidOnly = searchParams.get("unpaidOnly") === "true";
     const branchId = searchParams.get("branchId") || auth.branchId;
@@ -30,8 +34,42 @@ export async function GET(req: NextRequest) {
     if (branchId) query.branchId = branchId;
     if (unpaidOnly) query.balance = { $gt: 0 };
 
+    if (status && status !== "all") {
+      query.status = status;
+    }
+
+    if (from || to) {
+      const dateQuery: Record<string, Date> = {};
+      if (from) dateQuery.$gte = new Date(from);
+      if (to) {
+        const toDate = new Date(to);
+        toDate.setHours(23, 59, 59, 999);
+        dateQuery.$lte = toDate;
+      }
+      query.issueDate = dateQuery;
+    }
+
+    if (search) {
+      // Find matching members
+      const matchingMembers = await Member.find({
+        gymId: auth.gymId,
+        $or: [
+          { name: { $regex: search, $options: "i" } },
+          { phone: { $regex: search, $options: "i" } },
+          { memberCode: { $regex: search, $options: "i" } },
+        ],
+      }).select("_id");
+
+      const memberIds = matchingMembers.map((m) => m._id);
+
+      query.$or = [
+        { invoiceNumber: { $regex: search, $options: "i" } },
+        { memberId: { $in: memberIds } },
+      ];
+    }
+
     const invoices = await Invoice.find(query)
-      .sort({ issueDate: 1 })
+      .sort({ issueDate: -1 })
       .populate("memberId", "name phone memberCode photo");
 
     return NextResponse.json({
@@ -54,6 +92,7 @@ export async function GET(req: NextRequest) {
         dueDate: inv.dueDate,
         status: inv.status,
         items: inv.items,
+        shareToken: inv.shareToken,
       })),
     });
   } catch (error) {
@@ -64,4 +103,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-

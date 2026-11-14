@@ -32,6 +32,6 @@ List, open, print and share invoices and receipts.
 - **To:** `05-member-profile.md`, `06-collect-payment.md`.
 
 ## Done when
-- [ ] PDF matches the on-screen invoice, including tax.
-- [ ] Public page shows nothing except that invoice.
-- [ ] Revoking the token breaks the old link.
+- [x] PDF matches the on-screen invoice, including tax.
+- [x] Public page shows nothing except that invoice.
+- [x] Revoking the token breaks the old link.

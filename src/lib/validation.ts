@@ -1,6 +1,17 @@
 import { z } from "zod";
 
 /**
+ * Helper to clean and format phone to 10/12-digit Indian phone
+ */
+export function sanitizePhone(val: string): string {
+  let digits = val.replace(/\D/g, "");
+  if (digits.length === 10) {
+    digits = `91${digits}`;
+  }
+  return digits;
+}
+
+/**
  * Standard phone validator: converts to digits, validates length (10 to 13 digits)
  */
 export const phoneSchema = z

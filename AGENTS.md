@@ -199,5 +199,5 @@ Update this table as you go (Not started, In progress, Done).
 | # | Screen | Status |
 | --- | --- | --- |
 | 01–11 | Phase 1 screens | Done |
-| 12–16 | Phase 2 screens | Not started |
+| 12–16 | Phase 2 screens | Done |
 | 17–22 | Phase 3 screens | Not started |

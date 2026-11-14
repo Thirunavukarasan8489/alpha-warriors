@@ -54,6 +54,9 @@ export const WhatsAppTemplates = {
   expiryReminder: (p: TemplateParams) =>
     `Hi ${p.name || "Member"},\nYour membership at *${p.gym || "our Gym"}* (${p.plan || ""}) is ending on *${p.endDate}*.\nRenew today to keep your fitness streak uninterrupted! ⚡`,
 
+  expiredNotice: (p: TemplateParams) =>
+    `Hi ${p.name || "Member"},\nYour membership at *${p.gym || "our Gym"}* (${p.plan || ""}) ended on *${p.endDate}*.\nWe miss having you on the floor — renew today to get back into training! 💪`,
+
   duesReminder: (p: TemplateParams) =>
     `Hi ${p.name || "Member"},\nFriendly reminder from *${p.gym || "our Gym"}*: an amount of *${p.amount}* is pending towards your membership.\nPlease clear it at your earliest convenience. Thank you! 🙏`,
 

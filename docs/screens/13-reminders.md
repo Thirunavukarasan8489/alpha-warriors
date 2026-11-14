@@ -41,6 +41,6 @@ Show who needs a reminder and let staff send it on WhatsApp by hand. **The app n
 - **To:** `05-member-profile.md`, `06-collect-payment.md`, `07-membership-actions.md`, `16-settings.md`.
 
 ## Done when
-- [ ] No server job sends any message.
-- [ ] Missing or invalid WhatsApp numbers show a warning instead of a broken link.
-- [ ] Logging a share never blocks opening WhatsApp.
+- [x] No server job sends any message.
+- [x] Missing or invalid WhatsApp numbers show a warning instead of a broken link.
+- [x] Logging a share never blocks opening WhatsApp.

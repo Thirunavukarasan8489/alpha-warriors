@@ -41,5 +41,5 @@ Tabs (phone: a list of sections):
 - Template placeholders are validated, and a preview shows a sample message.
 
 ## Done when
-- [ ] A 500-row file previews in a few seconds and reports every bad row.
-- [ ] Changing the invoice prefix does not renumber old invoices.
+- [x] A 500-row file previews in a few seconds and reports every bad row.
+- [x] Changing the invoice prefix does not renumber old invoices.

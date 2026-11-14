@@ -35,5 +35,5 @@ Record what the gym spends so profit can be reported.
 - **To:** `11-reports.md`.
 
 ## Done when
-- [ ] Month total equals the expense summary report.
-- [ ] Receptionist cannot open this screen or call its API.
+- [x] Month total equals the expense summary report.
+- [x] Receptionist cannot open this screen or call its API.

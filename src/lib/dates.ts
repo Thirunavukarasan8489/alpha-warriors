@@ -120,3 +120,13 @@ export function diffInDays(dateA: Date | string, dateB: Date | string = new Date
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
 
+/**
+ * Get today's start and end timestamps in UTC corresponding to Asia/Kolkata
+ */
+export function getTodayStartEndUTC(): { start: Date; end: Date } {
+  const start = getStartOfDay(new Date());
+  const end = getEndOfDay(new Date());
+  return { start, end };
+}
+
+

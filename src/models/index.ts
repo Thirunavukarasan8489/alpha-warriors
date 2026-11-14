@@ -9,4 +9,5 @@ export * from "./Payment";
 export * from "./Attendance";
 export * from "./AuditLog";
 export * from "./Message";
+export * from "./Expense";
 
