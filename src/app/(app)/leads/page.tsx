@@ -12,6 +12,7 @@ import {
   Calendar,
   AlertTriangle,
   ArrowRight,
+  ArrowLeft,
   UserCheck,
   CheckCircle2,
   XCircle,
@@ -187,14 +188,24 @@ export default function LeadsPage() {
     <div className="space-y-6">
       {/* Top Banner & Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
-            <Flame className="w-6 h-6 text-red-600" />
-            Leads & Inquiries
-          </h1>
-          <p className="text-xs sm:text-sm text-gray-500 font-medium">
-            Track prospective warriors from first enquiry to gym membership
-          </p>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="md:hidden p-2 rounded-xl text-gray-500 hover:text-gray-900 bg-white border border-gray-200 shadow-2xs transition shrink-0 cursor-pointer touch-manipulation"
+            title="Go back"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
+              <Flame className="w-6 h-6 text-red-600" />
+              Leads & Inquiries
+            </h1>
+            <p className="text-xs sm:text-sm text-gray-500 font-medium">
+              Track prospective warriors from first enquiry to gym membership
+            </p>
+          </div>
         </div>
 
         <button

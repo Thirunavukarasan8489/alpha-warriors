@@ -317,3 +317,10 @@ Indexes on day one: `members(gymId, phone)` unique, `members(gymId, name)`, `mem
      - On desktop (>=640px), seamlessly flexes into a single horizontal row.
      - Dot menu dropdown is secured with a click-outside backdrop overlay to eliminate edge clipping on narrow mobile screens (320px–390px).
 
+9. **Mobile Back Navigation Across All App Routes**:
+   - Added responsive Back buttons (`router.back()` with `<ArrowLeft />`) across all detail, sub-navigation, and secondary drawer screens:
+     - **Member Profile (`/members/[id]`)**: Prominent "Back to Members" top navigation button.
+     - **Secondary Screens (Mobile `md:hidden`)**: Plans (`/plans`), Expenses (`/expenses`), Invoices (`/invoices`), Reminders (`/reminders`), Reports (`/reports`), POS Sales (`/sales`), Leads CRM (`/leads`), Staff Management (`/staff`), and Settings (`/settings`).
+     - **Existing Forms & Detail Views**: Member Edit, Add Member, Training, Invoice Detail, Staff Edit, Add Staff, Payroll, and Branches maintain their dedicated parent-route back buttons.
+
+

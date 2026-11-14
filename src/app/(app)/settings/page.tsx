@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import {
   Building2,
   Receipt,
@@ -16,6 +17,7 @@ import {
   HelpCircle,
   FileSpreadsheet,
   Loader2,
+  ArrowLeft,
 } from "lucide-react";
 import { Modal } from "@/components/Modal";
 import { useToast } from "@/components/Toast";
@@ -51,6 +53,7 @@ interface UserProfileData {
 }
 
 export default function SettingsPage() {
+  const router = useRouter();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -377,15 +380,25 @@ export default function SettingsPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
-          {currentUserRole === "owner" ? "Gym Settings & Configuration" : "Profile & Account Settings"}
-        </h1>
-        <p className="text-xs text-gray-500">
-          {currentUserRole === "owner"
-            ? "Manage business credentials, billing parameters, reminder templates, and bulk data import"
-            : "Update your profile details, upload your avatar, and manage account security"}
-        </p>
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="md:hidden p-2 rounded-xl text-gray-500 hover:text-gray-900 bg-white border border-gray-200 shadow-2xs transition shrink-0 cursor-pointer touch-manipulation"
+          title="Go back"
+        >
+          <ArrowLeft className="w-4 h-4" />
+        </button>
+        <div>
+          <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
+            {currentUserRole === "owner" ? "Gym Settings & Configuration" : "Profile & Account Settings"}
+          </h1>
+          <p className="text-xs text-gray-500">
+            {currentUserRole === "owner"
+              ? "Manage business credentials, billing parameters, reminder templates, and bulk data import"
+              : "Update your profile details, upload your avatar, and manage account security"}
+          </p>
+        </div>
       </div>
 
       {/* Tabs */}

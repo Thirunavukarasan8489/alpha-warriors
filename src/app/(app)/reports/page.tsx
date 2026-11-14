@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   BarChart3,
   Calendar,
@@ -30,6 +31,7 @@ interface ReportMeta {
 }
 
 export default function ReportsPage() {
+  const router = useRouter();
   const { toast } = useToast();
 
   const reportsList: ReportMeta[] = [
@@ -136,9 +138,19 @@ export default function ReportsPage() {
   return (
     <div className="space-y-6">
       {/* Page Title */}
-      <div>
-        <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">Business Reports</h1>
-        <p className="text-xs text-gray-500">Financial collections, dues, member retention and workout analytics</p>
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="md:hidden p-2 rounded-xl text-gray-500 hover:text-gray-900 bg-white border border-gray-200 shadow-2xs transition shrink-0 cursor-pointer touch-manipulation"
+          title="Go back"
+        >
+          <ArrowLeft className="w-4 h-4" />
+        </button>
+        <div>
+          <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">Business Reports</h1>
+          <p className="text-xs text-gray-500">Financial collections, dues, member retention and workout analytics</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

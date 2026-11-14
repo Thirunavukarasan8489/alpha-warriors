@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Users,
   Plus,
@@ -17,6 +18,7 @@ import {
   UserCheck,
   Loader2,
   Trash2,
+  ArrowLeft,
 } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
@@ -35,6 +37,7 @@ interface StaffMember {
 }
 
 export default function StaffListPage() {
+  const router = useRouter();
   const { toast } = useToast();
   const [staff, setStaff] = useState<StaffMember[]>([]);
   const [currentUser, setCurrentUser] = useState<{ id: string; role: string } | null>(null);
@@ -138,14 +141,24 @@ export default function StaffListPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
-            <Users className="w-6 h-6 text-red-600" />
-            Staff & Access Management
-          </h1>
-          <p className="text-xs text-gray-500">
-            Create logins, assign operational roles, and manage front-desk permissions
-          </p>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="md:hidden p-2 rounded-xl text-gray-500 hover:text-gray-900 bg-white border border-gray-200 shadow-2xs transition shrink-0 cursor-pointer touch-manipulation"
+            title="Go back"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
+              <Users className="w-6 h-6 text-red-600" />
+              Staff & Access Management
+            </h1>
+            <p className="text-xs text-gray-500">
+              Create logins, assign operational roles, and manage front-desk permissions
+            </p>
+          </div>
         </div>
 
         <Link

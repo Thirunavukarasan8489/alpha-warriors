@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
+  ArrowLeft,
   Phone,
   Calendar,
   CreditCard,
@@ -334,6 +335,19 @@ export default function MemberProfilePage() {
 
   return (
     <div className="space-y-6">
+      {/* Top Back Navigation */}
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-700 transition shadow-2xs text-xs font-bold cursor-pointer touch-manipulation"
+          title="Go back"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 text-red-600" />
+          <span>Back to Members</span>
+        </button>
+      </div>
+
       {/* Profile Header Card */}
       <div className="bg-white rounded-3xl p-5 sm:p-6 border border-gray-200/80 shadow-xs relative">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

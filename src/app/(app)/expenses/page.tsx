@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   TrendingDown,
   Plus,
@@ -12,6 +13,7 @@ import {
   PieChart,
   ShieldAlert,
   Loader2,
+  ArrowLeft,
 } from "lucide-react";
 import { SkeletonList, SkeletonTable } from "@/components/Skeleton";
 import { MoneyText } from "@/components/MoneyText";
@@ -44,6 +46,7 @@ const CATEGORIES = [
 ];
 
 export default function ExpensesPage() {
+  const router = useRouter();
   const { toast } = useToast();
 
   const [currentMonth, setCurrentMonth] = useState(() => {
@@ -194,14 +197,24 @@ export default function ExpensesPage() {
     <div className="space-y-6">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
-            <TrendingDown className="w-6 h-6 text-red-600" />
-            Gym Expenses
-          </h1>
-          <p className="text-xs text-gray-500">
-            Record facility overheads, utilities, maintenance, and equipment purchases
-          </p>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="md:hidden p-2 rounded-xl text-gray-500 hover:text-gray-900 bg-white border border-gray-200 shadow-2xs transition shrink-0 cursor-pointer touch-manipulation"
+            title="Go back"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
+              <TrendingDown className="w-6 h-6 text-red-600" />
+              Gym Expenses
+            </h1>
+            <p className="text-xs text-gray-500">
+              Record facility overheads, utilities, maintenance, and equipment purchases
+            </p>
+          </div>
         </div>
 
         <button

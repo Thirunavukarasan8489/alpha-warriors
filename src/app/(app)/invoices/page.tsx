@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   FileText,
   Search,
   Filter,
   ArrowRight,
+  ArrowLeft,
   Receipt,
   User,
   CheckCircle2,
@@ -39,6 +41,7 @@ interface InvoiceItem {
 }
 
 export default function InvoicesPage() {
+  const router = useRouter();
   const [invoices, setInvoices] = useState<InvoiceItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -78,14 +81,24 @@ export default function InvoicesPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
-            <Receipt className="w-6 h-6 text-red-600" />
-            Invoices & Receipts
-          </h1>
-          <p className="text-xs text-gray-500">
-            Track customer billings, issue public receipts, and monitor balances
-          </p>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="md:hidden p-2 rounded-xl text-gray-500 hover:text-gray-900 bg-white border border-gray-200 shadow-2xs transition shrink-0 cursor-pointer touch-manipulation"
+            title="Go back"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
+              <Receipt className="w-6 h-6 text-red-600" />
+              Invoices & Receipts
+            </h1>
+            <p className="text-xs text-gray-500">
+              Track customer billings, issue public receipts, and monitor balances
+            </p>
+          </div>
         </div>
       </div>
 

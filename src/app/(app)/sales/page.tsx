@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   ShoppingBag,
   Plus,
@@ -15,6 +16,7 @@ import {
   Receipt,
   MessageCircle,
   ArrowRight,
+  ArrowLeft,
   User,
   Phone,
   Tag,
@@ -78,6 +80,7 @@ interface SaleRecord {
 }
 
 export default function SalesPage() {
+  const router = useRouter();
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<"pos" | "history" | "products">("pos");
   const [userRole, setUserRole] = useState<string>("receptionist");
@@ -475,14 +478,24 @@ export default function SalesPage() {
     <div className="space-y-6">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
-            <ShoppingBag className="w-6 h-6 text-red-600" />
-            Store POS & Merchandise
-          </h1>
-          <p className="text-xs sm:text-sm text-gray-500 font-medium">
-            Sell supplements, apparel & equipment to members and walk-ins
-          </p>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="md:hidden p-2 rounded-xl text-gray-500 hover:text-gray-900 bg-white border border-gray-200 shadow-2xs transition shrink-0 cursor-pointer touch-manipulation"
+            title="Go back"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
+              <ShoppingBag className="w-6 h-6 text-red-600" />
+              Store POS & Merchandise
+            </h1>
+            <p className="text-xs sm:text-sm text-gray-500 font-medium">
+              Sell supplements, apparel & equipment to members and walk-ins
+            </p>
+          </div>
         </div>
 
         {/* Tab Nav Buttons */}

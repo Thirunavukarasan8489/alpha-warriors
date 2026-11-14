@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Bell,
   Clock,
@@ -17,6 +18,7 @@ import {
   Settings,
   CreditCard,
   RotateCw,
+  ArrowLeft,
 } from "lucide-react";
 import { MoneyText } from "@/components/MoneyText";
 import { DateText } from "@/components/DateText";
@@ -52,6 +54,7 @@ interface ReminderItem {
 }
 
 export default function RemindersPage() {
+  const router = useRouter();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<"expiring" | "expired" | "dues">("expiring");
   const [items, setItems] = useState<ReminderItem[]>([]);
@@ -167,14 +170,24 @@ export default function RemindersPage() {
     <div className="space-y-6">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
-            <Bell className="w-6 h-6 text-red-600" />
-            WhatsApp Reminders
-          </h1>
-          <p className="text-xs text-gray-500">
-            Send 1-tap polite notifications for expiring plans, renewals, and pending dues
-          </p>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="md:hidden p-2 rounded-xl text-gray-500 hover:text-gray-900 bg-white border border-gray-200 shadow-2xs transition shrink-0 cursor-pointer touch-manipulation"
+            title="Go back"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
+              <Bell className="w-6 h-6 text-red-600" />
+              WhatsApp Reminders
+            </h1>
+            <p className="text-xs text-gray-500">
+              Send 1-tap polite notifications for expiring plans, renewals, and pending dues
+            </p>
+          </div>
         </div>
 
         <Link

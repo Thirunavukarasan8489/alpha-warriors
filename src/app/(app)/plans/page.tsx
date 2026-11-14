@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Plus, Edit2, Trash2, Layers, Check, AlertCircle, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Plus, Edit2, Trash2, Layers, Check, AlertCircle, Loader2, ArrowLeft } from "lucide-react";
 import { SkeletonList } from "@/components/Skeleton";
 import { MoneyText } from "@/components/MoneyText";
 import { Modal } from "@/components/Modal";
@@ -20,6 +21,7 @@ interface PlanItem {
 }
 
 export default function PlansPage() {
+  const router = useRouter();
   const { toast } = useToast();
 
   const [plans, setPlans] = useState<PlanItem[]>([]);
@@ -170,10 +172,20 @@ export default function PlansPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">Membership Plans</h1>
-          <p className="text-xs text-gray-500">Configure subscription packages and pricing tiers</p>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="md:hidden p-2 rounded-xl text-gray-500 hover:text-gray-900 bg-white border border-gray-200 shadow-2xs transition shrink-0 cursor-pointer touch-manipulation"
+            title="Go back"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">Membership Plans</h1>
+            <p className="text-xs text-gray-500">Configure subscription packages and pricing tiers</p>
+          </div>
         </div>
 
         <button
