@@ -35,8 +35,11 @@ export async function POST(
       gymId,
       userId,
       action: "PORTAL_TOKEN_GENERATED",
+      targetType: "member",
+      targetId: id,
       resource: "Member",
       resourceId: id,
+      reason: `Portal link generated for ${member.name}`,
       details: { memberName: member.name },
     });
 
@@ -55,7 +58,7 @@ export async function POST(
   } catch (error: any) {
     console.error("POST /api/members/[id]/portal-token error:", error);
     return NextResponse.json(
-      { error: { code: "SERVER_ERROR", message: "Failed to generate portal link" } },
+      { error: { code: "SERVER_ERROR", message: error?.message || "Failed to generate portal link" } },
       { status: 500 }
     );
   }
@@ -87,8 +90,11 @@ export async function DELETE(
       gymId,
       userId,
       action: "PORTAL_TOKEN_REVOKED",
+      targetType: "member",
+      targetId: id,
       resource: "Member",
       resourceId: id,
+      reason: `Portal link revoked for ${member.name}`,
       details: { memberName: member.name },
     });
 
@@ -96,7 +102,7 @@ export async function DELETE(
   } catch (error: any) {
     console.error("DELETE /api/members/[id]/portal-token error:", error);
     return NextResponse.json(
-      { error: { code: "SERVER_ERROR", message: "Failed to revoke portal link" } },
+      { error: { code: "SERVER_ERROR", message: error?.message || "Failed to revoke portal link" } },
       { status: 500 }
     );
   }
