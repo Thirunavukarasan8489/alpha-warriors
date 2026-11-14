@@ -26,8 +26,11 @@ export default function StaffDetailPage() {
   const { toast } = useToast();
 
   const [staff, setStaff] = useState<any>(null);
+  const [currentUser, setCurrentUser] = useState<{ id: string; role: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Edit fields
   const [name, setName] = useState("");
@@ -57,7 +60,34 @@ export default function StaffDetailPage() {
 
   useEffect(() => {
     loadStaff();
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((d) => d.data?.user && setCurrentUser({ id: d.data.user.id, role: d.data.user.role }))
+      .catch(() => {});
   }, [staffId]);
+
+  const canDelete =
+    currentUser &&
+    (currentUser.role === "owner" || currentUser.role === "manager") &&
+    staff &&
+    staff.role !== "owner" &&
+    staff.id !== currentUser.id &&
+    !(currentUser.role === "manager" && staff.role === "manager");
+
+  const handleDeleteStaff = async () => {
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/staff/${staffId}`, { method: "DELETE" });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error?.message || "Failed to delete staff member");
+      toast(`Staff account ${staff.name} deleted successfully`, "info");
+      router.push("/staff");
+    } catch (err: any) {
+      toast(err.message || "Failed to delete staff member", "error");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -181,13 +211,18 @@ Sign in at ${window.location.origin}/login and change your password in Settings.
             <select
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              disabled={staff.role === "owner"}
-              className="w-full px-3.5 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 font-semibold"
+              disabled={
+                staff.role === "owner" ||
+                (currentUser?.role === "manager" && staff.role === "manager")
+              }
+              className="w-full px-3.5 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {staff.role === "owner" && <option value="owner">Gym Owner</option>}
               <option value="receptionist">Receptionist (Front desk, check-ins, payments)</option>
               <option value="trainer">Trainer (Trainee clients, PT sessions)</option>
-              <option value="manager">Manager (Branch operations, reports, voiding)</option>
+              {currentUser?.role === "owner" && (
+                <option value="manager">Manager (Branch operations, reports, voiding)</option>
+              )}
             </select>
           </div>
 
@@ -254,6 +289,41 @@ Sign in at ${window.location.origin}/login and change your password in Settings.
           </div>
         </div>
       </form>
+
+      {/* Danger Zone: Delete Staff Account */}
+      {canDelete && (
+        <div className="bg-rose-50 border border-rose-200/80 rounded-2xl p-5 sm:p-6 space-y-3">
+          <div className="flex items-center gap-2 text-rose-800">
+            <ShieldAlert className="w-5 h-5 text-rose-600 shrink-0" />
+            <h3 className="text-sm font-bold">Danger Zone</h3>
+          </div>
+          <p className="text-xs text-rose-700 leading-relaxed">
+            Permanently delete this staff account. Once deleted, this staff member will no longer be able to sign in or perform gym actions.
+          </p>
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={() => setShowDeleteConfirm(true)}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>Delete Staff Member</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Confirm Staff Deletion Dialog */}
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        title="Delete Staff Account"
+        message={`Are you sure you want to permanently delete the staff account for "${staff?.name}" (${staff?.role})? This action will immediately revoke their access and cannot be undone.`}
+        confirmLabel="Delete Account"
+        variant="danger"
+        isLoading={isDeleting}
+        onConfirm={handleDeleteStaff}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
 
       {/* Password Reset Modal */}
       {newPassword && (

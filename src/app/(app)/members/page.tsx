@@ -12,6 +12,7 @@ import { DateText } from "@/components/DateText";
 import { ShareButton } from "@/components/ShareButton";
 import { EmptyState } from "@/components/EmptyState";
 import { Modal } from "@/components/Modal";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { PlanPicker, PlanOption } from "@/components/PlanPicker";
 import { useToast } from "@/components/Toast";
 import { SkeletonList } from "@/components/Skeleton";
@@ -23,6 +24,7 @@ import {
   ArrowUpDown,
   PhoneCall,
   Loader2,
+  Trash2,
 } from "lucide-react";
 
 function MembersListContent() {
@@ -35,6 +37,7 @@ function MembersListContent() {
 
   const [members, setMembers] = useState<MemberListItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentUserRole, setCurrentUserRole] = useState<string>("receptionist");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [sortBy, setSortBy] = useState(initialSort);
@@ -45,6 +48,36 @@ function MembersListContent() {
   const [renewingMember, setRenewingMember] = useState<MemberListItem | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<PlanOption | null>(null);
   const [isRenewing, setIsRenewing] = useState(false);
+
+  // Delete Member state (Owner and Manager)
+  const [memberToDelete, setMemberToDelete] = useState<MemberListItem | null>(null);
+  const [isDeletingMember, setIsDeletingMember] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((d) => d.data?.user?.role && setCurrentUserRole(d.data.user.role))
+      .catch(() => {});
+  }, []);
+
+  const canDelete = currentUserRole === "owner" || currentUserRole === "manager";
+
+  const handleDeleteMember = async () => {
+    if (!memberToDelete) return;
+    setIsDeletingMember(true);
+    try {
+      const res = await fetch(`/api/members/${memberToDelete.id}`, { method: "DELETE" });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error?.message || "Failed to delete member");
+      toast(`Member ${memberToDelete.name} deleted successfully!`, "info");
+      setMemberToDelete(null);
+      fetchMembers(page, false);
+    } catch (err: unknown) {
+      toast((err as Error).message || "Error deleting member", "error");
+    } finally {
+      setIsDeletingMember(false);
+    }
+  };
 
   const statusOptions: FilterOption[] = [
     { id: "all", label: "All Members" },
@@ -216,6 +249,7 @@ function MembersListContent() {
                 key={m.id}
                 member={m}
                 onRenew={(mem) => setRenewingMember(mem)}
+                onDelete={canDelete ? (mem) => setMemberToDelete(mem) : undefined}
               />
             ))}
           </div>
@@ -316,6 +350,16 @@ function MembersListContent() {
                           >
                             Profile
                           </Link>
+                          {canDelete && (
+                            <button
+                              type="button"
+                              onClick={() => setMemberToDelete(m)}
+                              className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition"
+                              title="Delete Member"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -381,6 +425,18 @@ function MembersListContent() {
           </form>
         </Modal>
       )}
+
+      {/* Delete Member Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={!!memberToDelete}
+        title="Delete Member"
+        message={`Are you sure you want to delete ${memberToDelete?.name} (${memberToDelete?.memberCode})? This will archive their active membership listing. Historical payment records remain preserved.`}
+        confirmLabel="Delete Member"
+        variant="danger"
+        isLoading={isDeletingMember}
+        onConfirm={handleDeleteMember}
+        onCancel={() => setMemberToDelete(null)}
+      />
     </div>
   );
 }

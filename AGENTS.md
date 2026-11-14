@@ -141,10 +141,10 @@ docs/screens/                     the screen files
 
 | Role | Can | Cannot |
 | --- | --- | --- |
-| Owner | Everything in all branches | |
-| Manager | Everything in their branches except the app's own account settings | See other branches |
-| Receptionist | Add members, renew, take payments, mark attendance, share reminders, sell products | Void payments, see profit reports, change plans |
-| Trainer | View assigned members, log sessions, plans | See payments or other trainers' members |
+| Owner | Everything in all branches; Full CRUD on all Staff & Members; assign all roles | Delete or deactivate own owner account |
+| Manager | Everything in their branches except gym account settings; Full CRUD on Members; Full CRUD on Staff (receptionist, trainer) in branch; reset staff passwords | Delete or modify owner or peer managers; create owner/manager accounts; see other branches |
+| Receptionist | Add members, edit members, renew, take payments, mark attendance, share reminders, sell products | Delete members; manage staff; void payments; see profit reports; change plans |
+| Trainer | View assigned members, log sessions, plans | See payments or other trainers' members; edit/delete members; manage staff |
 | Member | Read own data in the portal | Anything else |
 
 **API.** JSON in, JSON out: `{ data }` on success, `{ error: { code, message } }` on failure. Validate input with zod. List endpoints take `page`, `search`, filters and `branchId`. Use HTTP status codes properly (401, 403, 404, 409 for duplicates, 422 for validation).
@@ -267,3 +267,17 @@ Indexes on day one: `members(gymId, phone)` unique, `members(gymId, name)`, `mem
    - **Skeleton Loaders**: Standardized skeleton components in `src/components/Skeleton.tsx` (`Skeleton`, `SkeletonStats`, `SkeletonList`, `SkeletonTable`) used across all pages during data fetching and CRUD operations.
    - **Multi-Click Prevention**: All action, modal, and API submission buttons disable when active (`disabled={loading || isSubmitting}`) and display an animated spinner (`<Loader2 className="w-3.5 h-3.5 animate-spin" />`) with user feedback text.
    - **Mobile Touch Usability**: Form submit buttons feature full-width mobile layouts (`w-full sm:w-auto`), `touch-manipulation`, proper z-index elevation, and clearance padding (`pb-20`) above bottom navigation. The `FloatingActionButton` overlay employs `pointer-events-none` on outer containers and automatically suppresses itself on form and creation routes (`/staff/new`, `/members/new`, edit/training pages) to prevent capturing touch events.
+
+5. **Staff & Member CRUD Operations (Owner & Manager Hierarchy)**:
+   - **Staff Management**:
+     - `owner`: Full CRUD across all roles (`manager`, `receptionist`, `trainer`). Owner cannot delete or deactivate self.
+     - `manager`: CRUD on `receptionist` and `trainer` in their branch. Cannot create, delete, or modify `owner` or other `manager` accounts. Cannot assign `owner` or `manager` roles.
+     - `DELETE /api/staff/[id]`: Protected with hierarchy validation and writes immutable `AuditLog` entry.
+     - Reset password (`POST /api/staff/[id]/reset-password`): Generates one-time temporary password, updates password hash, and records audit trail.
+   - **Member Management**:
+     - `owner` & `manager`: Full CRUD on gym members. Soft deletion (`isDeleted: true`) via `DELETE /api/members/[id]` logs action to `AuditLog`.
+     - `receptionist`: Create, read, and edit members. Cannot delete members.
+     - `trainer`: Read-only access scoped strictly to assigned members.
+   - **Responsive UI & Safety Confirmation**:
+     - Member and Staff lists feature delete buttons on both mobile cards (<900px) and desktop tables (>=900px).
+     - Staff detail (`/staff/[id]`) and Member profile (`/members/[id]`) feature Danger Zones / actions with `<ConfirmDialog>` modals and loading spinners before executing deletions.

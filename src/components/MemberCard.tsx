@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Phone, User, Calendar, CreditCard, RefreshCw } from "lucide-react";
+import { Phone, User, Calendar, CreditCard, RefreshCw, Trash2 } from "lucide-react";
 import { StatusBadge } from "./StatusBadge";
 import { MoneyText } from "./MoneyText";
 import { DateText } from "./DateText";
@@ -25,10 +25,11 @@ export interface MemberListItem {
 interface MemberCardProps {
   member: MemberListItem;
   onRenew?: (member: MemberListItem) => void;
+  onDelete?: (member: MemberListItem) => void;
   className?: string;
 }
 
-export function MemberCard({ member, onRenew, className = "" }: MemberCardProps) {
+export function MemberCard({ member, onRenew, onDelete, className = "" }: MemberCardProps) {
   const canRenew = member.displayStatus === "expiring" || member.displayStatus === "expired";
 
   return (
@@ -128,6 +129,17 @@ export function MemberCard({ member, onRenew, className = "" }: MemberCardProps)
           >
             View
           </Link>
+
+          {onDelete && (
+            <button
+              type="button"
+              onClick={() => onDelete(member)}
+              className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition"
+              title="Delete Member"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
       </div>
     </div>

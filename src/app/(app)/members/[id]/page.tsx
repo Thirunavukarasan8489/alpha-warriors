@@ -77,6 +77,7 @@ export default function MemberProfilePage() {
   const memberId = params.id as string;
 
   const [member, setMember] = useState<MemberProfileData | null>(null);
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"overview" | "memberships" | "payments" | "attendance" | "notes">("overview");
 
@@ -117,6 +118,12 @@ export default function MemberProfilePage() {
 
   useEffect(() => {
     loadProfile();
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((d) => {
+        if (d.data?.user?.role) setCurrentUserRole(d.data.user.role);
+      })
+      .catch(() => {});
   }, [memberId]);
 
   // Load Tab-specific data
@@ -504,16 +511,18 @@ export default function MemberProfilePage() {
                     </div>
                   )}
 
-                  <div className="py-1">
-                    <button
-                      type="button"
-                      onClick={() => setShowDeleteConfirm(true)}
-                      className="w-full px-4 py-2 text-left hover:bg-rose-50 flex items-center gap-2 text-rose-600"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      Delete Member
-                    </button>
-                  </div>
+                  {(currentUserRole === "owner" || currentUserRole === "manager") && (
+                    <div className="py-1">
+                      <button
+                        type="button"
+                        onClick={() => setShowDeleteConfirm(true)}
+                        className="w-full px-4 py-2 text-left hover:bg-rose-50 flex items-center gap-2 text-rose-600 font-semibold cursor-pointer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        Delete Member
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/db";
 import { requireAuth } from "@/lib/rbac";
-import { User } from "@/models";
+import { User, AuditLog } from "@/models";
 
 function generateOneTimePassword(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -17,7 +17,7 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const authResult = await requireAuth(["owner"]);
+  const authResult = await requireAuth(["owner", "manager"]);
   if ("response" in authResult) return authResult.response;
 
   const { auth } = authResult;
@@ -35,9 +35,32 @@ export async function POST(
       );
     }
 
+    if (user.role === "owner" && auth.role !== "owner") {
+      return NextResponse.json(
+        { error: { code: "FORBIDDEN", message: "Only the gym owner can reset the owner password." } },
+        { status: 403 }
+      );
+    }
+
+    if (auth.role === "manager" && user.role === "manager" && user._id.toString() !== auth.userId) {
+      return NextResponse.json(
+        { error: { code: "FORBIDDEN", message: "Managers cannot reset other managers' passwords." } },
+        { status: 403 }
+      );
+    }
+
     const oneTimePassword = generateOneTimePassword();
     user.passwordHash = await bcrypt.hash(oneTimePassword, 10);
     await user.save();
+
+    await AuditLog.create({
+      gymId: auth.gymId,
+      userId: auth.userId,
+      action: "RESET_STAFF_PASSWORD",
+      targetType: "user",
+      targetId: id,
+      reason: `${auth.role} reset temporary password for ${user.name} (${user.role})`,
+    });
 
     return NextResponse.json({
       data: {

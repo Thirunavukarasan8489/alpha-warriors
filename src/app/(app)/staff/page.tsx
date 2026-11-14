@@ -16,8 +16,10 @@ import {
   ShieldAlert,
   UserCheck,
   Loader2,
+  Trash2,
 } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { useToast } from "@/components/Toast";
 import { SkeletonList } from "@/components/Skeleton";
 
@@ -35,8 +37,11 @@ interface StaffMember {
 export default function StaffListPage() {
   const { toast } = useToast();
   const [staff, setStaff] = useState<StaffMember[]>([]);
+  const [currentUser, setCurrentUser] = useState<{ id: string; role: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [staffToDelete, setStaffToDelete] = useState<StaffMember | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const loadStaff = async () => {
     setLoading(true);
@@ -55,7 +60,37 @@ export default function StaffListPage() {
 
   useEffect(() => {
     loadStaff();
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((d) => d.data?.user && setCurrentUser({ id: d.data.user.id, role: d.data.user.role }))
+      .catch(() => {});
   }, []);
+
+  const canDeleteStaff = (target: StaffMember) => {
+    if (!currentUser) return false;
+    if (currentUser.role !== "owner" && currentUser.role !== "manager") return false;
+    if (target.role === "owner") return false; // Cannot delete gym owner
+    if (target.id === currentUser.id) return false; // Cannot delete self
+    if (currentUser.role === "manager" && target.role === "manager") return false; // Manager cannot delete another manager
+    return true;
+  };
+
+  const handleDeleteStaff = async () => {
+    if (!staffToDelete) return;
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/staff/${staffToDelete.id}`, { method: "DELETE" });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error?.message || "Failed to delete staff account");
+      toast(`Staff member ${staffToDelete.name} deleted successfully!`, "success");
+      setStaffToDelete(null);
+      loadStaff();
+    } catch (err: any) {
+      toast(err.message || "Failed to delete staff member", "error");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const handleToggleActive = async (member: StaffMember) => {
     if (member.role === "owner" || togglingId) {
@@ -178,6 +213,16 @@ export default function StaffListPage() {
                     >
                       Manage
                     </Link>
+                    {canDeleteStaff(u) && (
+                      <button
+                        type="button"
+                        onClick={() => setStaffToDelete(u)}
+                        className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition"
+                        title="Delete Staff Account"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -258,13 +303,25 @@ export default function StaffListPage() {
                     </td>
 
                     <td className="py-3.5 px-4 text-right">
-                      <Link
-                        href={`/staff/${u.id}`}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 hover:bg-red-50 hover:text-red-700 text-gray-700 font-bold rounded-xl transition text-[11px]"
-                      >
-                        <span>Manage</span>
-                        <ChevronRight className="w-3 h-3" />
-                      </Link>
+                      <div className="flex items-center gap-2 justify-end">
+                        <Link
+                          href={`/staff/${u.id}`}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 hover:bg-red-50 hover:text-red-700 text-gray-700 font-bold rounded-xl transition text-[11px]"
+                        >
+                          <span>Manage</span>
+                          <ChevronRight className="w-3 h-3" />
+                        </Link>
+                        {canDeleteStaff(u) && (
+                          <button
+                            type="button"
+                            onClick={() => setStaffToDelete(u)}
+                            className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition cursor-pointer"
+                            title="Delete Staff Account"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -273,6 +330,18 @@ export default function StaffListPage() {
           </div>
         </div>
       )}
+
+      {/* Delete Staff Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={!!staffToDelete}
+        title="Delete Staff Account"
+        message={`Are you sure you want to permanently delete the staff account for ${staffToDelete?.name} (${staffToDelete?.role})? This will revoke all their login access and credentials immediately.`}
+        confirmLabel="Delete Staff"
+        variant="danger"
+        isLoading={isDeleting}
+        onConfirm={handleDeleteStaff}
+        onCancel={() => setStaffToDelete(null)}
+      />
     </div>
   );
 }

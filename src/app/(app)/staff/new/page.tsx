@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -28,7 +28,17 @@ export default function NewStaffPage() {
     email: "",
     role: "receptionist",
   });
+  const [currentUserRole, setCurrentUserRole] = useState<string>("owner");
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((d) => {
+        if (d.data?.user?.role) setCurrentUserRole(d.data.user.role);
+      })
+      .catch(() => {});
+  }, []);
 
   // Success One-Time Password State
   const [createdStaff, setCreatedStaff] = useState<{
@@ -158,7 +168,9 @@ Please sign in at ${window.location.origin}/login and change your password in Se
             >
               <option value="receptionist">Receptionist (Front desk, check-ins, payments)</option>
               <option value="trainer">Trainer (Trainee clients, PT sessions only)</option>
-              <option value="manager">Manager (Branch operations, voiding, reports)</option>
+              {currentUserRole === "owner" && (
+                <option value="manager">Manager (Branch operations, voiding, reports)</option>
+              )}
             </select>
           </div>
         </div>

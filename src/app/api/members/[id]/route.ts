@@ -116,7 +116,7 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const authResult = await requireAuth();
+  const authResult = await requireAuth(["owner", "manager", "receptionist"]);
   if ("response" in authResult) return authResult.response;
 
   const { auth } = authResult;
@@ -186,7 +186,7 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const authResult = await requireAuth(["owner"]);
+  const authResult = await requireAuth(["owner", "manager"]);
   if ("response" in authResult) return authResult.response;
 
   const { auth } = authResult;
@@ -214,7 +214,7 @@ export async function DELETE(
       action: "DELETE_MEMBER",
       targetType: "member",
       targetId: id,
-      reason: "Owner soft deleted member",
+      reason: `${auth.role} soft deleted member ${member.name} (${member.memberCode})`,
     });
 
     return NextResponse.json({ data: { success: true } });

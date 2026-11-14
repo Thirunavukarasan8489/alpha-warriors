@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const authResult = await requireAuth(["owner"]);
+  const authResult = await requireAuth(["owner", "manager"]);
   if ("response" in authResult) return authResult.response;
 
   const { auth } = authResult;
@@ -67,6 +67,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: { code: "VALIDATION_ERROR", message: "Name, phone, and role are required" } },
         { status: 422 }
+      );
+    }
+
+    if (role === "owner") {
+      return NextResponse.json(
+        { error: { code: "FORBIDDEN", message: "Cannot create additional owner accounts" } },
+        { status: 403 }
+      );
+    }
+
+    if (auth.role === "manager" && role === "manager") {
+      return NextResponse.json(
+        { error: { code: "FORBIDDEN", message: "Only gym owners can create or assign managers" } },
+        { status: 403 }
       );
     }
 

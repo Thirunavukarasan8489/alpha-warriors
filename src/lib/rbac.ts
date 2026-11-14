@@ -20,6 +20,14 @@ export function canManagePlans(role: Role): boolean {
   return role === "owner" || role === "manager";
 }
 
+export function canManageStaff(role: Role): boolean {
+  return role === "owner" || role === "manager";
+}
+
+export function canDeleteMember(role: Role): boolean {
+  return role === "owner" || role === "manager";
+}
+
 export function canVoidPayments(role: Role): boolean {
   return role === "owner" || role === "manager";
 }
