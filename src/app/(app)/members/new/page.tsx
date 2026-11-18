@@ -63,19 +63,21 @@ function NewMemberForm() {
 
   const handlePlanChange = (plan: PlanOption) => {
     setSelectedPlan(plan);
-    const finalAmount = Math.max(0, plan.price - discountPaise);
+    const admissionFee = plan.admissionFee || 0;
+    const finalAmount = Math.max(0, plan.price + admissionFee - discountPaise);
     setFirstPaymentPaise(finalAmount);
     setSplitRows([{ mode: "cash", amount: finalAmount }]);
   };
 
   const handleDiscountChange = (rupeesStr: string) => {
     const paise = rupeesToPaise(rupeesStr);
-    const maxDiscount = selectedPlan ? selectedPlan.price : paise;
-    const clamped = Math.min(paise, maxDiscount);
+    const admissionFee = selectedPlan?.admissionFee || 0;
+    const baseTotal = selectedPlan ? selectedPlan.price + admissionFee : paise;
+    const clamped = Math.min(paise, baseTotal);
     setDiscountPaise(clamped);
 
     if (selectedPlan) {
-      const finalAmount = Math.max(0, selectedPlan.price - clamped);
+      const finalAmount = Math.max(0, baseTotal - clamped);
       setFirstPaymentPaise(finalAmount);
       setSplitRows([{ mode: splitRows[0]?.mode || "cash", amount: finalAmount }]);
     }
@@ -83,7 +85,8 @@ function NewMemberForm() {
 
   const handleFirstPaymentChange = (rupeesStr: string) => {
     const paise = rupeesToPaise(rupeesStr);
-    const maxPayable = selectedPlan ? Math.max(0, selectedPlan.price - discountPaise) : paise;
+    const admissionFee = selectedPlan?.admissionFee || 0;
+    const maxPayable = selectedPlan ? Math.max(0, selectedPlan.price + admissionFee - discountPaise) : paise;
     const clamped = Math.min(paise, maxPayable);
     setFirstPaymentPaise(clamped);
     setSplitRows([{ mode: splitRows[0]?.mode || "cash", amount: clamped }]);
@@ -164,8 +167,9 @@ function NewMemberForm() {
     }
   };
 
-  const planFinalAmount = selectedPlan ? Math.max(0, selectedPlan.price - discountPaise) : 0;
-  const balanceDue = Math.max(0, planFinalAmount - firstPaymentPaise);
+  const admissionFee = selectedPlan?.admissionFee || 0;
+  const planTotalPayable = selectedPlan ? Math.max(0, selectedPlan.price + admissionFee - discountPaise) : 0;
+  const balanceDue = Math.max(0, planTotalPayable - firstPaymentPaise);
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -405,11 +409,39 @@ function NewMemberForm() {
           </div>
 
           {selectedPlan && (
-            <div className="p-3 bg-gray-50 rounded-xl flex items-center justify-between text-xs">
-              <span className="text-gray-500">Plan Final Amount:</span>
-              <span className="text-sm font-extrabold text-gray-900">
-                <MoneyText paise={planFinalAmount} />
-              </span>
+            <div className="p-4 bg-gray-50/80 rounded-2xl border border-gray-200/80 space-y-2.5 text-xs">
+              <div className="flex items-center justify-between text-gray-600">
+                <span className="font-medium">Plan Base Price ({selectedPlan.durationDays} days):</span>
+                <span className="font-bold text-gray-900">{formatPaise(selectedPlan.price)}</span>
+              </div>
+
+              {selectedPlan.admissionFee && selectedPlan.admissionFee > 0 ? (
+                <div className="flex items-center justify-between py-1.5 px-3 bg-amber-50 rounded-xl border border-amber-200/80 text-amber-900">
+                  <span className="flex items-center gap-1.5 font-bold">
+                    <span>One-Time Admission Fee:</span>
+                    <span className="text-[10px] bg-amber-200/80 text-amber-950 px-1.5 py-0.5 rounded font-extrabold uppercase">
+                      Required
+                    </span>
+                  </span>
+                  <span className="font-black text-amber-950">+{formatPaise(selectedPlan.admissionFee)}</span>
+                </div>
+              ) : null}
+
+              {discountPaise > 0 && (
+                <div className="flex items-center justify-between text-emerald-600">
+                  <span className="font-medium">Discount Applied:</span>
+                  <span className="font-bold">-{formatPaise(discountPaise)}</span>
+                </div>
+              )}
+
+              <div className="pt-2.5 border-t border-gray-200 flex items-center justify-between">
+                <span className="font-black text-sm text-gray-900 uppercase tracking-tight">
+                  Total Amount Payable:
+                </span>
+                <span className="text-base sm:text-lg font-black text-red-600">
+                  <MoneyText paise={planTotalPayable} />
+                </span>
+              </div>
             </div>
           )}
         </div>

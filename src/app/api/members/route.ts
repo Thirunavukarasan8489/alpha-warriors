@@ -245,8 +245,10 @@ export async function POST(req: NextRequest) {
     const endDate = addDays(startDate, plan.durationDays);
 
     // Calculate pricing (in paise)
-    const discount = Math.min(data.discount || 0, plan.price);
-    const finalAmount = Math.max(0, plan.price - discount);
+    const admissionFee = plan.admissionFee || 0;
+    const basePayable = plan.price + admissionFee;
+    const discount = Math.min(data.discount || 0, basePayable);
+    const finalAmount = Math.max(0, basePayable - discount);
 
     // 1. Create Member
     const member = await Member.create({
@@ -275,6 +277,7 @@ export async function POST(req: NextRequest) {
       planName: plan.name,
       durationDays: plan.durationDays,
       price: plan.price,
+      admissionFee,
       taxPercent: plan.taxPercent,
       discount,
       finalAmount,
@@ -286,6 +289,20 @@ export async function POST(req: NextRequest) {
 
     // 3. Create Invoice
     const invoiceNumber = `INV-${Date.now().toString().slice(-6)}`;
+    const invoiceItems: { description: string; amount: number }[] = [
+      {
+        description: `${plan.name} (${plan.durationDays} Days Membership)`,
+        amount: Math.max(0, plan.price - discount),
+      },
+    ];
+
+    if (admissionFee > 0) {
+      invoiceItems.push({
+        description: "One-time Admission Fee",
+        amount: admissionFee,
+      });
+    }
+
     const invoice = await Invoice.create({
       gymId: auth.gymId,
       branchId: auth.branchId,
@@ -297,12 +314,7 @@ export async function POST(req: NextRequest) {
       balance: finalAmount,
       issueDate: startDate,
       status: "unpaid",
-      items: [
-        {
-          description: `${plan.name} (${plan.durationDays} Days Membership)`,
-          amount: finalAmount,
-        },
-      ],
+      items: invoiceItems,
     });
 
     // 4. Record First Payment (if paid upon registration)

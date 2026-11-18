@@ -323,4 +323,15 @@ Indexes on day one: `members(gymId, phone)` unique, `members(gymId, name)`, `mem
      - **Secondary Screens (Mobile `md:hidden`)**: Plans (`/plans`), Expenses (`/expenses`), Invoices (`/invoices`), Reminders (`/reminders`), Reports (`/reports`), POS Sales (`/sales`), Leads CRM (`/leads`), Staff Management (`/staff`), and Settings (`/settings`).
      - **Existing Forms & Detail Views**: Member Edit, Add Member, Training, Invoice Detail, Staff Edit, Add Staff, Payroll, and Branches maintain their dedicated parent-route back buttons.
 
+10. **One-Time Admission Fee System & Plan Preset Durations**:
+    - **Plan Presets**: Duration selection in `/plans` supports quick presets for `1 Day (1d)`, `1 Week (7d)`, `1 Month (30d)`, `3 Months (90d)`, `6 Months (180d)`, and `1 Year (365d)`.
+    - **One-Month Admission Fee Default**: When creating or editing a 1-month plan (`durationDays === 30` or name contains "month"), an **Admission Fee (₹)** input field is displayed by default with clear guidance. An optional toggle allows setting an admission fee on other plans if desired.
+    - **Schema & Storage**: `admissionFee` stored as integer paise in `Plan` and `Membership` schemas (`min: 0, default: 0`), validated via `planSchema`.
+    - **Plan Cards & PlanPicker**: Plans with `admissionFee > 0` display a distinct amber badge (`+ ₹{fee} Admission`) on both `/plans` and the `PlanPicker` component.
+    - **Member Enrollment (`/members/new`)**:
+      - Choosing a plan with an admission fee displays a clear, responsive price breakdown: Base Plan Fee + One-Time Admission Fee (Required) - Discount = Total Amount Payable.
+      - First payment default and balance calculations automatically factor in the admission fee.
+    - **Invoice & Accounting**: Member creation (`POST /api/members`) generates an itemized `Invoice` with line items for both membership duration and the one-time admission fee, preserving tax receipt and accounting accuracy.
+
+
 

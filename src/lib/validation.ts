@@ -43,6 +43,7 @@ export const planSchema = z.object({
   name: z.string().min(1, "Plan name is required"),
   durationDays: z.number().int().positive("Duration must be at least 1 day"),
   price: z.number().int().nonnegative("Price must be 0 or greater (in paise)"),
+  admissionFee: z.number().int().nonnegative("Admission fee must be 0 or greater").optional().default(0),
   taxPercent: z.number().min(0).max(100).default(18),
   sessions: z.number().int().optional(),
   isActive: z.boolean().default(true),

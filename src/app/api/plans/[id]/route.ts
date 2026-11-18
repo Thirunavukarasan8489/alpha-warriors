@@ -57,6 +57,7 @@ export async function PATCH(
         name: plan.name,
         durationDays: plan.durationDays,
         price: plan.price,
+        admissionFee: plan.admissionFee || 0,
         taxPercent: plan.taxPercent,
         sessions: plan.sessions,
         isActive: plan.isActive,

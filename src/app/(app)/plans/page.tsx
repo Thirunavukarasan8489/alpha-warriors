@@ -15,6 +15,7 @@ interface PlanItem {
   name: string;
   durationDays: number;
   price: number;
+  admissionFee?: number;
   taxPercent: number;
   sessions?: number;
   isActive: boolean;
@@ -30,10 +31,12 @@ export default function PlansPage() {
   // Add / Edit Modal state
   const [showModal, setShowModal] = useState(false);
   const [editingPlan, setEditingPlan] = useState<PlanItem | null>(null);
+  const [showCustomAdmissionFee, setShowCustomAdmissionFee] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     durationDays: 30,
     priceRupees: "",
+    admissionFeeRupees: "",
     taxPercent: 18,
     sessions: "",
     isActive: true,
@@ -65,10 +68,12 @@ export default function PlansPage() {
 
   const openAddModal = () => {
     setEditingPlan(null);
+    setShowCustomAdmissionFee(false);
     setFormData({
       name: "",
       durationDays: 30,
       priceRupees: "",
+      admissionFeeRupees: "",
       taxPercent: 18,
       sessions: "",
       isActive: true,
@@ -78,10 +83,12 @@ export default function PlansPage() {
 
   const openEditModal = (plan: PlanItem) => {
     setEditingPlan(plan);
+    setShowCustomAdmissionFee(Boolean(plan.admissionFee && plan.admissionFee > 0));
     setFormData({
       name: plan.name,
       durationDays: plan.durationDays,
       priceRupees: (plan.price / 100).toString(),
+      admissionFeeRupees: plan.admissionFee ? (plan.admissionFee / 100).toString() : "",
       taxPercent: plan.taxPercent,
       sessions: plan.sessions ? plan.sessions.toString() : "",
       isActive: plan.isActive,
@@ -95,10 +102,16 @@ export default function PlansPage() {
 
     try {
       const pricePaise = rupeesToPaise(formData.priceRupees);
+      const isOneMonthPlan = formData.durationDays === 30 || formData.name.toLowerCase().includes("month");
+      const admissionFeePaise = (isOneMonthPlan || showCustomAdmissionFee) && formData.admissionFeeRupees
+        ? rupeesToPaise(formData.admissionFeeRupees)
+        : 0;
+
       const payload = {
         name: formData.name,
         durationDays: Number(formData.durationDays),
         price: pricePaise,
+        admissionFee: admissionFeePaise,
         taxPercent: Number(formData.taxPercent),
         sessions: formData.sessions ? Number(formData.sessions) : undefined,
         isActive: formData.isActive,
@@ -256,6 +269,13 @@ export default function PlansPage() {
                     </span>
                   )}
                 </div>
+
+                {p.admissionFee && p.admissionFee > 0 ? (
+                  <div className="mt-2.5 px-2.5 py-1.5 bg-amber-50 border border-amber-200/80 rounded-xl flex items-center justify-between text-xs">
+                    <span className="font-semibold text-amber-800 text-[11px]">One-Time Admission Fee:</span>
+                    <span className="font-black text-amber-900">+{formatPaise(p.admissionFee)}</span>
+                  </div>
+                ) : null}
               </div>
 
               {/* Action buttons */}
@@ -328,15 +348,53 @@ export default function PlansPage() {
                 required
                 className="w-full px-3.5 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 font-medium"
               />
-              <div className="flex gap-1.5 mt-1.5 flex-wrap">
-                {[30, 90, 180, 365].map((d) => (
+              <div className="flex gap-1.5 mt-2 flex-wrap">
+                {[
+                  { d: 1, label: "1 Day" },
+                  { d: 7, label: "1 Week" },
+                  { d: 30, label: "1 Month" },
+                  { d: 90, label: "3 Mo" },
+                  { d: 180, label: "6 Mo" },
+                  { d: 365, label: "1 Yr" },
+                ].map((item) => (
                   <button
-                    key={d}
+                    key={item.d}
                     type="button"
-                    onClick={() => setFormData({ ...formData, durationDays: d })}
-                    className="px-2 py-0.5 text-[10px] bg-gray-100 hover:bg-gray-200 rounded font-semibold text-gray-600"
+                    onClick={() => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        durationDays: item.d,
+                        name:
+                          prev.name === "" ||
+                          [
+                            "One Day Plan",
+                            "Weekly Plan",
+                            "One Month Plan",
+                            "3 Months Plan",
+                            "6 Months Plan",
+                            "1 Year Plan",
+                          ].includes(prev.name)
+                            ? item.d === 1
+                              ? "One Day Plan"
+                              : item.d === 7
+                              ? "Weekly Plan"
+                              : item.d === 30
+                              ? "One Month Plan"
+                              : item.d === 90
+                              ? "3 Months Plan"
+                              : item.d === 180
+                              ? "6 Months Plan"
+                              : "1 Year Plan"
+                            : prev.name,
+                      }));
+                    }}
+                    className={`px-2 py-1 text-[11px] rounded-lg font-bold transition ${
+                      formData.durationDays === item.d
+                        ? "bg-red-600 text-white shadow-2xs"
+                        : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                    }`}
                   >
-                    {d}d
+                    {item.label}
                   </button>
                 ))}
               </div>
@@ -362,6 +420,64 @@ export default function PlansPage() {
               </div>
             </div>
           </div>
+
+          {/* Admission Fee: By default shown for 1 Month plan (30 days or month in name) */}
+          {formData.durationDays === 30 ||
+          formData.name.toLowerCase().includes("month") ||
+          showCustomAdmissionFee ? (
+            <div className="p-3.5 bg-amber-50/80 border border-amber-200/90 rounded-2xl space-y-2 animate-in fade-in duration-200">
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-extrabold text-amber-900 uppercase tracking-wider">
+                  Admission Fee (₹)
+                </label>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wide bg-amber-200/80 text-amber-900 px-2 py-0.5 rounded-md">
+                    {formData.durationDays === 30 ? "Default for One Month Plan" : "Enrollment Fee"}
+                  </span>
+                  {formData.durationDays !== 30 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowCustomAdmissionFee(false);
+                        setFormData({ ...formData, admissionFeeRupees: "" });
+                      }}
+                      className="text-[10px] text-amber-800 hover:text-red-700 underline font-semibold"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-700 font-bold text-sm">
+                  ₹
+                </span>
+                <input
+                  type="number"
+                  min="0"
+                  value={formData.admissionFeeRupees}
+                  onChange={(e) =>
+                    setFormData({ ...formData, admissionFeeRupees: e.target.value })
+                  }
+                  placeholder="e.g. 500"
+                  className="w-full pl-8 pr-3.5 py-2.5 text-sm bg-white border border-amber-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 font-bold text-gray-900 shadow-2xs"
+                />
+              </div>
+              <p className="text-[11px] text-amber-800/90 leading-tight">
+                One-time admission fee collected from new members when they first enroll with this plan.
+              </p>
+            </div>
+          ) : (
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowCustomAdmissionFee(true)}
+                className="text-xs text-amber-700 hover:text-amber-800 font-bold hover:underline"
+              >
+                + Add Admission Fee to this plan
+              </button>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-3">
             <div>

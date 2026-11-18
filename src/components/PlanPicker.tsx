@@ -9,6 +9,7 @@ export interface PlanOption {
   name: string;
   durationDays: number;
   price: number;
+  admissionFee?: number;
   taxPercent: number;
   isActive: boolean;
 }
@@ -17,6 +18,7 @@ interface PlanPickerProps {
   selectedPlanId?: string;
   startDate?: string | Date;
   onChange: (plan: PlanOption) => void;
+  showAdmissionFee?: boolean;
   className?: string;
 }
 
@@ -24,6 +26,7 @@ export function PlanPicker({
   selectedPlanId,
   startDate = new Date(),
   onChange,
+  showAdmissionFee = true,
   className = "",
 }: PlanPickerProps) {
   const [plans, setPlans] = useState<PlanOption[]>([]);
@@ -84,10 +87,22 @@ export function PlanPicker({
                 <div>
                   <h4 className="font-bold text-sm text-gray-900">{plan.name}</h4>
                   <p className="text-xs text-gray-500 mt-0.5">{plan.durationDays} days</p>
+                  {showAdmissionFee && plan.admissionFee && plan.admissionFee > 0 ? (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100/80 border border-amber-300 px-1.5 py-0.5 rounded-md mt-1.5">
+                      + {formatPaise(plan.admissionFee)} Admission
+                    </span>
+                  ) : null}
                 </div>
-                <span className="font-black text-sm text-red-600">
-                  {formatPaise(plan.price)}
-                </span>
+                <div className="text-right">
+                  <span className="font-black text-sm text-red-600">
+                    {formatPaise(plan.price)}
+                  </span>
+                  {showAdmissionFee && plan.admissionFee && plan.admissionFee > 0 ? (
+                    <span className="block text-[10px] text-gray-400 font-medium">
+                      + admission
+                    </span>
+                  ) : null}
+                </div>
               </div>
               <div className="mt-2 pt-2 border-t border-gray-100 flex items-center justify-between text-[11px] text-gray-400">
                 <span>Ends on:</span>

@@ -65,6 +65,7 @@ interface MemberProfileData {
     endDate: string;
     status: string;
     price?: number;
+    admissionFee?: number;
     finalAmount?: number;
     frozenAt?: string;
     expectedResumeDate?: string;
@@ -647,6 +648,13 @@ export default function MemberProfilePage() {
                       <MoneyText paise={member.currentMembership.price} />
                     </div>
                   )}
+                  {member.currentMembership.admissionFee !== undefined &&
+                    member.currentMembership.admissionFee > 0 && (
+                      <div className="flex justify-between text-amber-800">
+                        <span className="font-medium">Admission Fee:</span>
+                        <span className="font-bold">+{formatPaise(member.currentMembership.admissionFee)}</span>
+                      </div>
+                    )}
                 </div>
               ) : (
                 <p className="text-xs text-gray-400 py-3">No active membership found.</p>

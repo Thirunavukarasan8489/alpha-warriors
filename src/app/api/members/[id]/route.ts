@@ -101,6 +101,7 @@ export async function GET(
               endDate: latestMembership.endDate,
               status: latestMembership.status,
               price: auth.role === "trainer" ? undefined : latestMembership.price,
+              admissionFee: auth.role === "trainer" ? undefined : latestMembership.admissionFee,
               finalAmount: auth.role === "trainer" ? undefined : latestMembership.finalAmount,
               frozenAt: latestMembership.frozenAt,
               expectedResumeDate: latestMembership.expectedResumeDate,

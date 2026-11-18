@@ -5,6 +5,7 @@ export interface IPlan extends Document {
   name: string;
   durationDays: number;
   price: number; // in paise
+  admissionFee?: number; // in paise (optional one-time enrollment fee)
   taxPercent: number;
   sessions?: number;
   isActive: boolean;
@@ -18,6 +19,7 @@ const PlanSchema = new Schema<IPlan>(
     name: { type: String, required: true, trim: true },
     durationDays: { type: Number, required: true },
     price: { type: Number, required: true, min: 0 },
+    admissionFee: { type: Number, default: 0, min: 0 },
     taxPercent: { type: Number, default: 18 },
     sessions: { type: Number },
     isActive: { type: Boolean, default: true },

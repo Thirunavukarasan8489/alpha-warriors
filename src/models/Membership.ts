@@ -8,6 +8,7 @@ export interface IMembership extends Document {
   planName: string;
   durationDays: number;
   price: number; // in paise
+  admissionFee?: number; // in paise
   taxPercent: number;
   discount: number; // in paise
   finalAmount: number; // in paise
@@ -32,6 +33,7 @@ const MembershipSchema = new Schema<IMembership>(
     planName: { type: String, required: true },
     durationDays: { type: Number, required: true },
     price: { type: Number, required: true, min: 0 },
+    admissionFee: { type: Number, default: 0, min: 0 },
     taxPercent: { type: Number, default: 18 },
     discount: { type: Number, default: 0 },
     finalAmount: { type: Number, required: true, min: 0 },
